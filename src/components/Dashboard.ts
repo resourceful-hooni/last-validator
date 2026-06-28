@@ -15,6 +15,11 @@ export class Dashboard {
   private readonly titleEl: HTMLDivElement;
   private readonly chips: KpiChip[];
   private readonly vbar: VCapBar;
+  private timers: number[] = [];
+
+  private after(ms: number, fn: () => void): void {
+    this.timers.push(window.setTimeout(fn, ms));
+  }
 
   constructor() {
     this.el = document.createElement('div');
@@ -54,7 +59,7 @@ export class Dashboard {
     if (opts.all) {
       // S4-A: 남은 KPI까지 일괄 초록 점등(약간의 stagger)
       this.chips.forEach((c, i) => {
-        setTimeout(() => c.setStatus(state.kpiStatus(c.kpiIndex as KpiIndex), true), i * 90);
+        this.after(i * 90, () => c.setStatus(state.kpiStatus(c.kpiIndex as KpiIndex), true));
       });
     } else {
       const chip = this.chips[kpi];
@@ -62,7 +67,7 @@ export class Dashboard {
     }
     if (opts.killVbar) {
       // 초록 정점 직후 vCap 디밍
-      setTimeout(() => this.vbar.kill(true), opts.all ? 520 : 200);
+      this.after(opts.all ? 520 : 200, () => this.vbar.kill(true));
     } else {
       this.vbar.setValue(state.vCap, true);
     }
@@ -75,10 +80,12 @@ export class Dashboard {
 
   flashGreen(): void {
     this.el.classList.add('is-flash');
-    setTimeout(() => this.el.classList.remove('is-flash'), 700);
+    this.after(700, () => this.el.classList.remove('is-flash'));
   }
 
   reset(): void {
+    for (const id of this.timers) window.clearTimeout(id);
+    this.timers = [];
     this.el.classList.remove('has-redflag', 'is-flash');
     this.chips.forEach((c) => c.reset());
     this.vbar.reset();

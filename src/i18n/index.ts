@@ -91,6 +91,10 @@ export async function setLocale(
   // <html lang> → tokens.css의 html[lang] 폰트/줄높이 토큰이 따라온다.
   document.documentElement.lang = loc;
 
+  // 로케일별 문서 제목(브라우저 탭/일부 스크레이퍼)
+  const title = loaded[loc]?.['s0.title'] ?? loaded[FALLBACK_LOCALE]?.['s0.title'];
+  if (title) document.title = title;
+
   // 영속화
   if (!opts.skipPersist) {
     try {

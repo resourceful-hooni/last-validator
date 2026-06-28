@@ -52,7 +52,8 @@ async function boot(): Promise<void> {
 
   // 개발 전용 디버그 훅(빌드시 트리셰이킹). 검증/QA용.
   if (import.meta.env.DEV) {
-    (window as unknown as { __app: unknown }).__app = { engine, hud, state: stateRef };
+    const { gsap } = await import('gsap');
+    (window as unknown as { __app: unknown }).__app = { engine, hud, state: stateRef, gsap };
   }
 
   await pre.done();

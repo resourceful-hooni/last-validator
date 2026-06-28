@@ -89,12 +89,22 @@ export const audio = {
   thud(): void {
     tone({ freq: 150, type: 'sine', dur: 0.26, level: 0.2, sweepTo: 90 });
   },
-  /** S4 경보 꺼짐 — 험이 끊기고 정적 */
+  /** S4 경보 꺼짐 — 험이 끊기고 정적. 오실레이터를 정지·해제해 리플레이 시 재생성 가능하게 한다. */
   alarmOff(): void {
     if (!ctx || !humGain) return;
     const now = ctx.currentTime;
     humGain.gain.cancelScheduledValues(now);
     humGain.gain.linearRampToValueAtTime(0, now + 0.5);
+    const stopAt = now + 0.6;
+    for (const o of humNodes) {
+      try {
+        o.stop(stopAt);
+      } catch {
+        /* already stopped */
+      }
+    }
+    humNodes = []; // 비워서 다음 startHum()이 새 험을 만들 수 있게
+    humGain = null;
   },
   /** S8 모니터 비프 + 긴장 드론 */
   monitor(): void {

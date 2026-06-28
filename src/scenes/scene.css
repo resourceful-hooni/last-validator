@@ -23,7 +23,6 @@
 /* 글자별 stagger 조각 */
 .ch {
   display: inline-block;
-  will-change: transform, opacity;
 }
 
 .scene__kicker {

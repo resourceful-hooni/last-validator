@@ -9,9 +9,12 @@
 }
 
 .lang-switcher__btn {
-  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
   min-width: 44px;
-  padding: 4px 10px;
+  padding: 6px 11px;
   border-radius: 999px;
   font-size: 12px;
   line-height: 1;
@@ -32,9 +35,9 @@
   font-weight: var(--fw-strong);
 }
 
-/* 모바일 터치 타깃 보강 */
+/* 모바일 터치 타깃 ≥44px (DESIGN_SYSTEM §9) */
 @media (max-width: 480px) {
   .lang-switcher__btn {
-    padding: 6px 9px;
+    min-height: 44px;
   }
 }

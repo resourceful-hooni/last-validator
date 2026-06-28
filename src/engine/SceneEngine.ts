@@ -112,11 +112,8 @@ export class SceneEngine {
   async rerenderCurrent(): Promise<void> {
     const id = this.current?.id;
     if (!id) return;
-    // locked 우회: 직접 재진입
-    const wasLocked = this.locked;
-    this.locked = false;
+    this.locked = false; // 전환 잠금 해제 후 동일 씬 재진입
     await this.next(id);
-    this.locked = wasLocked && false;
   }
 
   /** 엔진 정지·정리 (리플레이 직전) */

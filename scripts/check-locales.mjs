@@ -49,6 +49,35 @@ for (const loc of locales) {
   }
 }
 
+// 강조 토큰(<em>/<gn>/<rd>) 균형 + 로케일 간 개수 일치 검사 (I18N §3: 의미 위치 유지)
+const TOKENS = ['em', 'gn', 'rd'];
+function tokenCounts(s) {
+  const c = {};
+  for (const tag of TOKENS) {
+    const open = (s.match(new RegExp(`<${tag}>`, 'g')) || []).length;
+    const close = (s.match(new RegExp(`</${tag}>`, 'g')) || []).length;
+    if (open !== close) {
+      console.error(`  ! 토큰 불균형 <${tag}> ${open}/${close}`);
+      problems += 1;
+    }
+    c[tag] = open;
+  }
+  return c;
+}
+for (const key of baseKeys) {
+  const base = tokenCounts(String(data[BASE][key]));
+  for (const loc of locales) {
+    if (loc === BASE) continue;
+    const cur = tokenCounts(String(data[loc][key] ?? ''));
+    for (const tag of TOKENS) {
+      if (base[tag] !== cur[tag]) {
+        console.error(`✗ ${loc}: 강조 토큰 <${tag}> 개수 불일치 @ ${key} (ko=${base[tag]} ${loc}=${cur[tag]})`);
+        problems += 1;
+      }
+    }
+  }
+}
+
 if (problems === 0) {
   console.log(`✓ 로케일 키 일치 — ${baseKeys.size} keys × ${locales.length} locales, 누락 0`);
 } else {
