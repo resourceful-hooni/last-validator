@@ -1,0 +1,36 @@
+.top-bar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: max(10px, env(safe-area-inset-top)) clamp(12px, 4vw, 18px) 10px;
+  pointer-events: none;
+}
+
+.top-bar > * {
+  pointer-events: auto;
+}
+
+.top-bar__mute {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  min-height: 40px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--surf) 70%, transparent);
+  backdrop-filter: blur(6px);
+  color: var(--mut);
+  transition: color var(--dur-micro) var(--ease-in);
+}
+
+.top-bar__mute:hover {
+  color: var(--txt);
+}

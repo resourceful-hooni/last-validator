@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" role="img" aria-label="마지막 검증자">
+  <rect width="180" height="180" rx="40" fill="#0b0d10"/>
+  <circle cx="54" cy="90" r="13" fill="#34c77b" opacity="0.28"/>
+  <circle cx="90" cy="90" r="13" fill="#34c77b" opacity="0.28"/>
+  <circle cx="128" cy="90" r="18" fill="#e24a3d"/>
+  <circle cx="128" cy="90" r="33" fill="none" stroke="#e24a3d" stroke-width="6" opacity="0.5"/>
+</svg>

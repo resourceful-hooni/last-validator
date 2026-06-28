@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#11151a"/>
+      <stop offset="1" stop-color="#0b0d10"/>
+    </linearGradient>
+    <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="10" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- 미세 스캔라인 -->
+  <g opacity="0.05">
+    <rect width="1200" height="630" fill="url(#scan)"/>
+  </g>
+  <pattern id="scan" width="1" height="3" patternUnits="userSpaceOnUse">
+    <rect width="1" height="1" fill="#ffffff"/>
+  </pattern>
+
+  <!-- 키커 -->
+  <text x="90" y="180" fill="#5f6873" font-family="Arial, sans-serif" font-size="26" letter-spacing="6">PRE-MORTEM · INTERACTIVE</text>
+
+  <!-- 타이틀 -->
+  <text x="88" y="300" fill="#e7eaed" font-family="'Apple SD Gothic Neo','Malgun Gothic',sans-serif" font-size="120" font-weight="800" letter-spacing="-2">마지막 검증자</text>
+
+  <!-- 명제 두 줄 -->
+  <text x="92" y="392" fill="#8a929b" font-family="'Apple SD Gothic Neo','Malgun Gothic',sans-serif" font-size="38" font-weight="400">AI는 일자리를 빼앗지 않았다.</text>
+  <text x="92" y="446" fill="#e24a3d" font-family="'Apple SD Gothic Neo','Malgun Gothic',sans-serif" font-size="38" font-weight="700">그것을 검증할 능력을 비웠다.</text>
+
+  <!-- 초록 점등 모티프 (마지막 한 점은 빨강) -->
+  <g transform="translate(92,520)">
+    <circle cx="0" cy="0" r="14" fill="#34c77b" filter="url(#glow)"/>
+    <circle cx="44" cy="0" r="14" fill="#34c77b" filter="url(#glow)"/>
+    <circle cx="88" cy="0" r="14" fill="#34c77b" filter="url(#glow)"/>
+    <circle cx="140" cy="0" r="18" fill="#e24a3d" filter="url(#glow)"/>
+  </g>
+  <text x="92" y="575" fill="#5f6873" font-family="Arial, sans-serif" font-size="22">2026 KAIST AI × 실패 아이디어 공모전 · 보완 자료</text>
+</svg>

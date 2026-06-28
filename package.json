@@ -1,0 +1,24 @@
+{
+  "name": "last-validator",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "「마지막 검증자」 — 2026 KAIST AI×실패 공모전 보완 자료 (인터랙티브 시네마틱 웹)",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "check-locales": "node scripts/check-locales.mjs",
+    "extract-locales": "node scripts/extract-locales.mjs",
+    "render-og": "node scripts/render-og.mjs"
+  },
+  "devDependencies": {
+    "sharp": "^0.35.2",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.5"
+  },
+  "dependencies": {
+    "gsap": "^3.12.5"
+  }
+}

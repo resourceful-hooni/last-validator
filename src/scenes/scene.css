@@ -1,0 +1,165 @@
+/* scene.css — 데모 씬 공통 스타일 (Phase 1 검증용; Phase 2+에서 정식 컴포넌트로 대체) */
+
+.scene {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 88px var(--pad-x) 40px;
+  min-height: 100dvh;
+}
+
+.scene__kicker {
+  font-size: var(--fs-kicker);
+  letter-spacing: var(--ls-kicker);
+  text-transform: uppercase;
+  color: var(--mut2);
+  margin-bottom: 14px;
+}
+
+.scene__meta {
+  font-size: var(--fs-caption);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--mut2);
+  margin-bottom: 10px;
+}
+
+.scene__title {
+  font-size: var(--fs-scene-title);
+  font-weight: var(--fw-title);
+  letter-spacing: var(--ls-title);
+  line-height: 1.3;
+  margin-bottom: 14px;
+}
+
+.scene__title--hero {
+  font-size: var(--fs-title);
+}
+
+.scene__body {
+  font-size: var(--fs-body);
+  color: var(--mut);
+  margin-bottom: 8px;
+}
+
+.scene__body strong,
+.scene__body .rt-em {
+  color: var(--txt);
+}
+
+.scene__footer {
+  font-size: var(--fs-caption);
+  color: var(--mut2);
+  margin-top: 18px;
+}
+
+.scene__note {
+  font-size: var(--fs-caption);
+  color: var(--mut2);
+  opacity: 0.8;
+}
+
+/* 선택 카드 (데모) */
+.choices {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 22px 0;
+}
+
+.choice {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, var(--surf), var(--bg2));
+  transition:
+    border-color var(--dur-micro) var(--ease-in),
+    transform var(--dur-micro) var(--ease-in);
+}
+
+.choice:hover {
+  border-color: var(--mut);
+  transform: translateY(-2px);
+}
+
+.choice__tag {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mut2);
+}
+
+.choice__text {
+  font-weight: 600;
+  margin: 4px 0 2px;
+}
+
+.choice__sub {
+  font-size: var(--fs-caption);
+  color: var(--mut);
+}
+
+/* 액션 버튼 */
+.btn {
+  align-self: flex-start;
+  padding: 12px 20px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surf2);
+  font-weight: 600;
+  transition:
+    border-color var(--dur-micro) var(--ease-in),
+    background var(--dur-micro) var(--ease-in);
+}
+
+.btn:hover {
+  border-color: var(--green);
+}
+
+.btn--ghost {
+  background: transparent;
+}
+
+/* 델타 칩 */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.chip {
+  font-size: var(--fs-caption);
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+}
+
+.chip--up {
+  color: var(--green);
+  border-color: color-mix(in srgb, var(--green) 50%, var(--line));
+}
+
+.chip--dn {
+  color: var(--red);
+  border-color: color-mix(in srgb, var(--red) 50%, var(--line));
+}
+
+.chip--hold {
+  color: var(--amber);
+  border-color: color-mix(in srgb, var(--amber) 50%, var(--line));
+}
+
+.demo-state {
+  margin-top: 16px;
+  font-size: var(--fs-caption);
+  color: var(--mut2);
+  font-variant-numeric: tabular-nums;
+}

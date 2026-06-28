@@ -1,0 +1,40 @@
+.lang-switcher {
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surf) 70%, transparent);
+  backdrop-filter: blur(6px);
+}
+
+.lang-switcher__btn {
+  min-height: 32px;
+  min-width: 44px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 1;
+  color: var(--mut);
+  white-space: nowrap;
+  transition:
+    color var(--dur-micro) var(--ease-in),
+    background var(--dur-micro) var(--ease-in);
+}
+
+.lang-switcher__btn:hover {
+  color: var(--txt);
+}
+
+.lang-switcher__btn.is-active {
+  color: var(--txt);
+  background: var(--surf2);
+  font-weight: var(--fw-strong);
+}
+
+/* 모바일 터치 타깃 보강 */
+@media (max-width: 480px) {
+  .lang-switcher__btn {
+    padding: 6px 9px;
+  }
+}

@@ -1,0 +1,72 @@
+/* tokens.css — DESIGN_SYSTEM 정본 미러 (§1 색, §2 타이포, §9 다국어 폰트) */
+
+:root {
+  /* ── 색 토큰 (DESIGN_SYSTEM §1) ── */
+  --bg: #0b0d10;
+  --bg2: #11151a;
+  --surf: #161b21;
+  --surf2: #1d242c;
+  --line: #2a323b;
+  --txt: #e7eaed;
+  --mut: #8a929b;
+  --mut2: #5f6873;
+  --green: #34c77b;
+  --green-glow: rgba(52, 199, 123, 0.55); /* 함정의 초록 */
+  --amber: #e0a23a; /* 망설임 / 대가 */
+  --red: #e24a3d;
+  --red-deep: #c0392b; /* 위험 / 진실 / 명제 강조 */
+
+  /* 앵커(S11) 적갈색 톤 (DESIGN_SYSTEM §4 AnchorCard) */
+  --anchor-bg: #1a1012;
+  --anchor-line: #3a2024;
+
+  /* ── 타이포 스케일 (반응형 clamp · §2) ── */
+  --fs-title: clamp(32px, 9vw, 46px);
+  --fs-scene-title: clamp(18px, 5vw, 22px);
+  --fs-body: clamp(14px, 3.7vw, 15.5px);
+  --fs-caption: 11px;
+  --fs-kicker: 10px;
+
+  /* 굵기 */
+  --fw-body: 400;
+  --fw-strong: 700;
+  --fw-title: 800;
+
+  /* 자간 */
+  --ls-title: -0.015em;
+  --ls-kicker: 0.2em;
+
+  /* ── 레이아웃 ── */
+  --container-max: 680px;
+  --pad-x: clamp(14px, 4vw, 16px);
+  --radius: 12px;
+
+  /* ── 모션 (§3) ── */
+  --ease-in: cubic-bezier(0.22, 1, 0.36, 1); /* power2.out 근사 */
+  --ease-io: cubic-bezier(0.65, 0, 0.35, 1); /* power2.inOut 근사 */
+  --dur-micro: 0.25s;
+  --dur-enter: 0.5s;
+  --dur-cinematic: 1s;
+
+  /* ── 로케일 기본 폰트/줄높이 (ko 기준; html[lang]로 교체 · §9) ── */
+  --font-stack: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', system-ui, sans-serif;
+  --lh-body: 1.6;
+}
+
+/* ── 로케일별 폰트 스택 + 줄높이 (I18N §4 / DESIGN_SYSTEM §9) ── */
+html[lang='ko'] {
+  --font-stack: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', system-ui, sans-serif;
+  --lh-body: 1.6;
+}
+html[lang='en'] {
+  --font-stack: 'Inter', 'Helvetica Neue', Arial, system-ui, sans-serif;
+  --lh-body: 1.5;
+}
+html[lang='zh'] {
+  --font-stack: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+  --lh-body: 1.55;
+}
+html[lang='ja'] {
+  --font-stack: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', 'Meiryo', system-ui, sans-serif;
+  --lh-body: 1.6;
+}
