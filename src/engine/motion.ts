@@ -127,15 +127,17 @@ export function flashTransition(
   } satisfies Partial<CSSStyleDeclaration>);
   document.body.appendChild(overlay);
 
-  const cleanup = () => overlay.remove();
+  let removed = false;
+  const cleanup = () => {
+    if (removed) return;
+    removed = true;
+    overlay.remove();
+  };
 
   if (prefersReducedMotion()) {
     onMid();
-    gsap.fromTo(
-      overlay,
-      { opacity: 0.6 },
-      { opacity: 0, duration: 0.15, onComplete: cleanup },
-    );
+    // GSAP rAF에 의존하지 않는 보장 정리(백그라운드 탭에서도 안전)
+    window.setTimeout(cleanup, 160);
     return;
   }
 
@@ -144,6 +146,8 @@ export function flashTransition(
   tl.to(overlay, { opacity: 1, duration: 0.4, ease: EASE_IO })
     .add(() => onMid())
     .to(overlay, { opacity: 0, duration: 0.6, delay: hold, ease: EASE_IO });
+  // 안전망: 타임라인이 어떤 이유로든 완료 콜백을 못 부르면 강제 정리
+  window.setTimeout(cleanup, 1600);
 }
 
 /**
@@ -161,10 +165,17 @@ export function greenVeil(): void {
     pointerEvents: 'none',
   });
   document.body.appendChild(veil);
+  let removed = false;
+  const cleanup = () => {
+    if (removed) return;
+    removed = true;
+    veil.remove();
+  };
   gsap
-    .timeline({ onComplete: () => veil.remove() })
+    .timeline({ onComplete: cleanup })
     .to(veil, { opacity: 1, duration: 0.45, ease: 'power2.out' })
     .to(veil, { opacity: 0, duration: 0.8, ease: 'power2.inOut' }, '+=0.1');
+  window.setTimeout(cleanup, 1600); // 안전망(백그라운드 탭에서 rAF 정지 대비)
 }
 
 /** GSAP context를 만들어 씬 단위로 트윈을 격리·정리(리플레이 누수 0). */
