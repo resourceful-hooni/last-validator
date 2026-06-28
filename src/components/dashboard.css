@@ -1,0 +1,149 @@
+.dashboard {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, var(--surf), var(--bg2));
+  padding: 12px 14px 14px;
+  transition: box-shadow 0.4s var(--ease-io);
+}
+
+.dashboard.is-flash {
+  box-shadow: 0 0 0 1px var(--green-glow), 0 0 60px var(--green-glow);
+}
+
+.dashboard__title {
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--mut2);
+  margin-bottom: 10px;
+}
+
+.dashboard__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+@media (min-width: 520px) {
+  .dashboard__grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* ── KPI 칩 ── */
+.kpi-chip {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 9px 10px;
+  border-radius: 9px;
+  border: 1px solid var(--line);
+  background: var(--surf2);
+  transition:
+    border-color 0.4s var(--ease-io),
+    box-shadow 0.4s var(--ease-io);
+}
+
+.kpi-chip__label {
+  font-size: 11px;
+  color: var(--mut);
+  line-height: 1.3;
+}
+
+.kpi-chip__value {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--mut2);
+  font-variant-numeric: tabular-nums;
+}
+
+.kpi-chip[data-status='green'] {
+  border-color: var(--green);
+  box-shadow: 0 0 0 1px var(--green-glow), 0 0 18px -4px var(--green-glow);
+}
+.kpi-chip[data-status='green'] .kpi-chip__value {
+  color: var(--green);
+}
+
+.kpi-chip[data-status='amber'] {
+  border-color: var(--amber);
+}
+.kpi-chip[data-status='amber'] .kpi-chip__value {
+  color: var(--amber);
+}
+
+.kpi-chip.is-pulse {
+  animation: kpi-pulse 0.55s var(--ease-io);
+}
+
+@keyframes kpi-pulse {
+  0% {
+    box-shadow: 0 0 0 1px var(--green-glow), 0 0 0 var(--green-glow);
+  }
+  45% {
+    box-shadow: 0 0 0 1px var(--green-glow), 0 0 28px 2px var(--green-glow);
+  }
+  100% {
+    box-shadow: 0 0 0 1px var(--green-glow), 0 0 18px -4px var(--green-glow);
+  }
+}
+
+/* S4-B 불편한 빨간 지표 */
+.dashboard.has-redflag::after {
+  content: '';
+  display: block;
+  margin-top: 10px;
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--red-deep), transparent);
+  opacity: 0.85;
+}
+
+/* ── vCap 바 ── */
+.vcap {
+  margin-top: 12px;
+  transition: opacity 0.6s var(--ease-io);
+}
+
+.vcap__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 5px;
+}
+
+.vcap__label {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mut2);
+}
+
+.vcap__value {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--mut);
+  font-variant-numeric: tabular-nums;
+}
+
+.vcap__track {
+  height: 5px;
+  border-radius: 3px;
+  background: var(--surf2);
+  overflow: hidden;
+}
+
+.vcap__fill {
+  height: 100%;
+  border-radius: 3px;
+  background: var(--green);
+  transition: background 0.5s var(--ease-io);
+}
+
+.vcap[data-threshold='high'] .vcap__fill { background: var(--green); }
+.vcap[data-threshold='mid'] .vcap__fill { background: var(--amber); }
+.vcap[data-threshold='low'] .vcap__fill { background: var(--red); }
+.vcap[data-threshold='off'] .vcap__fill { background: var(--mut2); }
+.vcap[data-threshold='high'] .vcap__value { color: var(--green); }
+.vcap[data-threshold='mid'] .vcap__value { color: var(--amber); }
+.vcap[data-threshold='low'] .vcap__value { color: var(--red); }

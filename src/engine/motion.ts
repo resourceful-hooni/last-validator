@@ -7,7 +7,21 @@
 import { gsap } from 'gsap';
 
 const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-export const prefersReducedMotion = (): boolean => mq.matches;
+
+/**
+ * 사용자 강제 토글(접근성) — OS 설정과 별개로 모션을 끌 수 있다.
+ * `?reduce=1` 또는 localStorage('forceReduce')='1'. (검증/저사양 기기에도 유용)
+ */
+function forcedReduce(): boolean {
+  try {
+    if (new URLSearchParams(window.location.search).get('reduce') === '1') return true;
+    return localStorage.getItem('forceReduce') === '1';
+  } catch {
+    return false;
+  }
+}
+
+export const prefersReducedMotion = (): boolean => mq.matches || forcedReduce();
 
 /** 등장 ease / 전환 ease (DESIGN_SYSTEM §3) */
 export const EASE_IN = 'power2.out';
@@ -130,6 +144,27 @@ export function flashTransition(
   tl.to(overlay, { opacity: 1, duration: 0.4, ease: EASE_IO })
     .add(() => onMid())
     .to(overlay, { opacity: 0, duration: 0.6, delay: hold, ease: EASE_IO });
+}
+
+/**
+ * 은은한 초록빛 정점(S4-A '만족의 정점'). 부드럽게 차오르고 빠지는 단발 — 점멸/스트로브 아님.
+ * reduced-motion 시 호출하지 않는다(scene에서 분기).
+ */
+export function greenVeil(): void {
+  const veil = document.createElement('div');
+  Object.assign(veil.style, {
+    position: 'fixed',
+    inset: '0',
+    background: 'radial-gradient(120% 80% at 50% 40%, rgba(52,199,123,0.28), rgba(52,199,123,0) 70%)',
+    opacity: '0',
+    zIndex: '400',
+    pointerEvents: 'none',
+  });
+  document.body.appendChild(veil);
+  gsap
+    .timeline({ onComplete: () => veil.remove() })
+    .to(veil, { opacity: 1, duration: 0.45, ease: 'power2.out' })
+    .to(veil, { opacity: 0, duration: 0.8, ease: 'power2.inOut' }, '+=0.1');
 }
 
 /** GSAP context를 만들어 씬 단위로 트윈을 격리·정리(리플레이 누수 0). */

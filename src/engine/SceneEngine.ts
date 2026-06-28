@@ -6,8 +6,14 @@
 import { gsap } from 'gsap';
 import { state } from './state';
 import type { Branch } from '../data/script';
+import type { Hud } from '../components/Hud';
 
-export interface SceneContext {
+/** 모든 씬에 공유되는 컨텍스트(앱 셸) */
+export interface SharedContext {
+  hud: Hud;
+}
+
+export interface SceneContext extends SharedContext {
   engine: SceneEngine;
   /** 씬 트윈을 격리하는 GSAP context (exit 시 revert) */
   gsapCtx: gsap.Context;
@@ -28,9 +34,11 @@ export class SceneEngine {
   private current: Scene | null = null;
   private currentCtx: SceneContext | null = null;
   private locked = false;
+  private readonly shared: SharedContext;
 
-  constructor(root: HTMLElement) {
+  constructor(root: HTMLElement, shared: SharedContext) {
     this.root = root;
+    this.shared = shared;
   }
 
   register(id: string, factory: SceneFactory): this {
@@ -79,6 +87,7 @@ export class SceneEngine {
       this.root.appendChild(container);
 
       const ctx: SceneContext = {
+        ...this.shared,
         engine: this,
         gsapCtx: gsap.context(() => {}, container),
       };

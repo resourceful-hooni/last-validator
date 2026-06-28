@@ -1,0 +1,38 @@
+.hud {
+  width: 100%;
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: calc(max(10px, env(safe-area-inset-top)) + 40px) var(--pad-x) 0;
+  /* fixed TopBar(음소거/언어) 높이만큼 위 여백 확보 */
+}
+
+.hud.is-hidden {
+  display: none;
+}
+
+.hud__bar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  margin-bottom: 12px;
+  font-size: 11px;
+}
+
+.hud__brand {
+  font-weight: 700;
+  color: var(--txt);
+  letter-spacing: -0.01em;
+}
+
+.hud__act {
+  justify-self: center;
+  color: var(--mut);
+  letter-spacing: 0.08em;
+}
+
+.hud__prog {
+  justify-self: end;
+  color: var(--mut2);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.1em;
+}
