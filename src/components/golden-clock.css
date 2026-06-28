@@ -1,0 +1,27 @@
+.gclock {
+  width: 56px;
+  height: 56px;
+}
+.gclock svg {
+  width: 100%;
+  height: 100%;
+}
+.gclock[data-branch='tragedy'] { --gc: var(--red); }
+.gclock[data-branch='nearmiss'] { --gc: var(--amber); }
+.gclock[data-branch='averted'] { --gc: var(--green); }
+
+.gclock__track {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 4;
+}
+.gclock__arc {
+  fill: none;
+  stroke: var(--gc);
+  stroke-width: 4;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 4px var(--gc));
+}
+.gclock__hub {
+  fill: var(--gc);
+}

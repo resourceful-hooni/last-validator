@@ -14,6 +14,7 @@ import { createS0Title } from './scenes/s0_title';
 import { createDecisionScene } from './scenes/decision';
 import { DECISIONS } from './data/script';
 import { registerActTwoScenes } from './scenes';
+import { state as stateRef } from './engine/state';
 
 async function boot(): Promise<void> {
   const app = document.querySelector<HTMLDivElement>('#app');
@@ -46,6 +47,11 @@ async function boot(): Promise<void> {
   onLocaleChange(() => {
     void engine.rerenderCurrent();
   });
+
+  // 개발 전용 디버그 훅(빌드시 트리셰이킹). 검증/QA용.
+  if (import.meta.env.DEV) {
+    (window as unknown as { __app: unknown }).__app = { engine, hud, state: stateRef };
+  }
 
   await pre.done();
   await engine.next('s0');
