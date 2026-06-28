@@ -5,6 +5,7 @@ import type { Scene, SceneContext } from '../engine/SceneEngine';
 import { t } from '../i18n';
 import { renderRich, renderPlain } from '../i18n/richText';
 import { fadeUp, staggerIn, prefersReducedMotion } from '../engine/motion';
+import { activateAudio } from '../engine/audio';
 import { gsap } from 'gsap';
 import './scene.css';
 
@@ -32,6 +33,7 @@ export function createS0Title(): Scene {
       `;
 
       container.querySelector<HTMLButtonElement>('[data-start]')?.addEventListener('click', () => {
+        activateAudio(); // 첫 사용자 제스처 — 오디오 컨텍스트 활성(기본 음소거 유지)
         void ctx.engine.next('s1');
       });
 

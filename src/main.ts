@@ -6,7 +6,8 @@ import './styles/tokens.css';
 import './styles/base.css';
 
 import { initI18n, onLocaleChange, injectAlternateLinks } from './i18n';
-import { createTopBar } from './components/TopBar';
+import { createTopBar, onMuteChange } from './components/TopBar';
+import { setMuted } from './engine/audio';
 import { createPreloader } from './components/Preloader';
 import { Hud } from './components/Hud';
 import { SceneEngine } from './engine/SceneEngine';
@@ -25,6 +26,7 @@ async function boot(): Promise<void> {
   injectAlternateLinks();
 
   document.body.appendChild(createTopBar());
+  onMuteChange((m) => setMuted(m)); // 음소거 토글 → 오디오 마스터
 
   const hud = new Hud();
   app.appendChild(hud.el);

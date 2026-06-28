@@ -43,8 +43,11 @@ public/                # 자작 SVG 파비콘 · og.png · CREDITS.md
    `vite.config.ts`의 `base: './'` 덕분에 `https://<user>.github.io/<repo>/`에서 레포명과 무관하게 동작(로컬 Node 없어도 배포됨).
 
 ### 구현 진행 상태
-- ✅ Phase 0 (셋업) · 0.5 (메타·OG·프리로더·셸) · 1 (씬 엔진·상태·데이터) · 1.5 (i18n 4개 언어)
-- ⏭ 다음: Phase 2 (인트로 + 운영 대시보드) → Phase 3 (ACT1 5결정) → … (`TASKS.md`)
+- ✅ **Phase 0~7 전부 완료** — S0~S12 전체 경험 동작(ACT1 5결정 + 분기 3종 엔딩), 4개 언어, 사운드 합성, 접근성/성능 폴리시.
+  - 0 셋업 · 0.5 메타/OG/프리로더 · 1 엔진/상태 · 1.5 i18n(ko/en/zh/ja)
+  - 2 대시보드 · 3 ACT1 5결정 · 4 결산/리빌 · 5 2036 분기 3종 · 6 엔딩 · 7 사운드·접근성·성능
+- 제출 전: `PROPOSAL_URL`(현재 빈 값→CTA 숨김)을 실제 제안서 링크로 교체.
+- 접근성: OS reduced-motion 자동 대응 + `?reduce=1` 강제 토글, 키보드 진행, 기본 음소거.
 
 코드 라이선스: [MIT](LICENSE). 에셋 출처: [`public/CREDITS.md`](public/CREDITS.md).
 

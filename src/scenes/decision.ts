@@ -15,6 +15,7 @@ import type { DecisionScene, Pick } from '../data/script';
 import { createChoiceCard } from '../components/ChoiceCard';
 import { createFeedbackCard } from '../components/FeedbackCard';
 import { greenVeil } from '../engine/motion';
+import { audio } from '../engine/audio';
 import './scene.css';
 
 export function createDecisionScene(d: DecisionScene, index: number): Scene {
@@ -71,10 +72,15 @@ export function createDecisionScene(d: DecisionScene, index: number): Scene {
           if (isS4Eff) {
             ctx.hud.dashboard.flashGreen();
             if (!prefersReducedMotion()) greenVeil(); // 만족의 정점(은은한 초록빛)
+            audio.ding();
+            audio.alarmOff(); // 험이 끊기고 정적
+          } else {
+            audio.ding();
           }
         } else {
           ctx.hud.dashboard.animateChoice(choice.kpi, {});
           if (d.id === 's4') ctx.hud.dashboard.addRedFlag(); // 불편한 빨간 지표
+          audio.thud();
         }
 
         // 선택지 → 피드백 크로스페이드

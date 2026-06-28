@@ -7,6 +7,7 @@ import type { Scene, SceneContext } from '../engine/SceneEngine';
 import { t } from '../i18n';
 import { renderPlain } from '../i18n/richText';
 import { countTo, fadeUp, prefersReducedMotion } from '../engine/motion';
+import { audio } from '../engine/audio';
 import { gsap } from 'gsap';
 import './scene.css';
 
@@ -33,6 +34,8 @@ export function createS8Timejump(): Scene {
         void ctx.engine.next('s9');
       };
       container.addEventListener('click', advance);
+
+      audio.monitor();
 
       ctx.gsapCtx.add(() => {
         if (prefersReducedMotion()) {

@@ -79,11 +79,13 @@ export class SceneEngine {
         this.currentCtx?.gsapCtx.revert();
       }
       this.root.replaceChildren();
+      window.scrollTo(0, 0); // 새 씬은 항상 상단에서 시작
 
       const scene = await factory();
       const container = document.createElement('section');
       container.className = 'scene';
       container.dataset.scene = scene.id;
+      container.tabIndex = -1; // 씬 전환 시 포커스 이동(키보드/스크린리더 접근성)
       this.root.appendChild(container);
 
       const ctx: SceneContext = {
@@ -95,6 +97,12 @@ export class SceneEngine {
       this.currentCtx = ctx;
 
       await scene.enter(container, ctx);
+      // 새 씬으로 포커스 이동(스크롤 점프 없이) — 키보드 진행/스크린리더 안내
+      try {
+        container.focus({ preventScroll: true });
+      } catch {
+        /* noop */
+      }
     } finally {
       this.locked = false;
     }

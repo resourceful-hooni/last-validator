@@ -85,6 +85,12 @@ a {
   border-radius: 4px;
 }
 
+/* 씬 컨테이너는 프로그램적 포커스만 받음 — 외곽선 숨김 */
+.scene:focus,
+.scene:focus-visible {
+  outline: none;
+}
+
 /* 강조 토큰 (i18n richText 변환 결과 · <em>/<gn>/<rd>) */
 .rt-em {
   font-weight: var(--fw-strong);

@@ -9,6 +9,7 @@ import type { Scene, SceneContext } from '../engine/SceneEngine';
 import { t } from '../i18n';
 import { renderRich, renderPlain } from '../i18n/richText';
 import { fadeUp } from '../engine/motion';
+import { audio } from '../engine/audio';
 import { state } from '../engine/state';
 import { PROPOSAL_URL } from '../data/script';
 import { createTraceRow } from '../components/TraceRow';
@@ -68,6 +69,8 @@ export function createEnding(): Scene {
       container.querySelector('[data-proposal]')?.addEventListener('click', () => {
         if (PROPOSAL_URL) window.open(PROPOSAL_URL, '_blank', 'noopener');
       });
+
+      audio.impact();
 
       ctx.gsapCtx.add(() => {
         fadeUp(container.querySelectorAll('.scene__kicker, .ending-verdict, .ending-intro'), { stagger: 0.12 });
