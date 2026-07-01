@@ -7,7 +7,8 @@ import './styles/base.css';
 
 import { initI18n, onLocaleChange, injectAlternateLinks } from './i18n';
 import { createTopBar, onMuteChange } from './components/TopBar';
-import { setMuted } from './engine/audio';
+import { setMuted, audioState, activateAudio } from './engine/audio';
+import { setMute } from './components/TopBar';
 import { createPreloader } from './components/Preloader';
 import { playCutscene, cutsceneUrl } from './components/CutsceneVideo';
 import { prefersReducedMotion } from './engine/motion';
@@ -72,7 +73,17 @@ async function boot(): Promise<void> {
   // 개발 전용 디버그 훅(빌드시 트리셰이킹). 검증/QA용.
   if (import.meta.env.DEV) {
     const { gsap } = await import('gsap');
-    (window as unknown as { __app: unknown }).__app = { engine, hud, state: stateRef, gsap };
+    (window as unknown as { __app: unknown }).__app = {
+      engine,
+      hud,
+      state: stateRef,
+      gsap,
+      audioState,
+      testAudio: () => {
+        activateAudio();
+        setMute(false);
+      },
+    };
   }
 
   await pre.done();
