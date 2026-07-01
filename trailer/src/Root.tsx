@@ -39,6 +39,23 @@ export const RemotionRoot: React.FC = () => {
         width={1920}
         height={1080}
       />
+      {/* 모바일 세로(9:16) 변형 — 같은 컴포넌트가 방향에 맞춰 스케일 */}
+      <Composition
+        id="IntroMobile"
+        component={Intro}
+        durationInFrames={INTRO_DURATION}
+        fps={30}
+        width={1080}
+        height={1920}
+      />
+      <Composition
+        id="FinaleMobile"
+        component={Finale}
+        durationInFrames={FINALE_DURATION}
+        fps={30}
+        width={1080}
+        height={1920}
+      />
     </>
   );
 };

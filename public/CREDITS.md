@@ -6,7 +6,7 @@
 - 모든 시각 요소(대시보드, KPI, vCap 바, 뇌 CT 추상, 시계, 역추적 화살표, 스코어보드, 파비콘, OG 이미지)는 **자작 SVG 또는 CSS/Canvas 생성**. 외부 이미지 0.
 - `public/favicon.svg`, `public/apple-touch-icon.svg` — 자작 SVG(검증 점 모티프).
 - `public/og.png` — `assets-src/og.svg`(자작)를 `npm run render-og`로 래스터화한 1200×630 미리보기. (래스터화 도구 `sharp`는 빌드 의존성일 뿐 산출물에 포함되지 않음.)
-- `public/video/intro.mp4`·`timejump.mp4`·`finale.mp4` — **자작 Remotion 컴포지션**(`trailer/src/Intro.tsx`·`Timejump.tsx`·`Finale.tsx`)을 렌더한 비인터랙티브 컷신. 외부 영상·음원 0(무음). 인트로/2036 전환/명제 finale에 임베드, reduced-motion·로드실패 시 라이브 폴백. 컷신은 항상 body 부착(씬 transform과 무관).
+- `public/video/{intro,finale}.mp4`(가로 1920×1080) + `{intro,finale}-mobile.mp4`(세로 1080×1920) — **자작 Remotion 컴포지션**(`trailer/src/Intro.tsx`·`Finale.tsx`, 방향 반응형)을 렌더한 비인터랙티브 컷신. 외부 영상·음원 0(무음). 뷰포트에 따라 가로/세로 변형 서빙. 인트로/명제 finale에 임베드, reduced-motion·로드실패 시 라이브 폴백. 컷신은 항상 body 부착. (2036 전환 S8은 라이브 3D.)
 
 ## 폰트
 - 현재 빌드는 **시스템 폰트 스택**만 사용한다(임베드 없음). 따라서 별도 폰트 라이선스 의무 없음.

@@ -9,9 +9,15 @@ import './cutscene.css';
 
 export type CutsceneResult = 'ended' | 'skipped' | 'error';
 
-/** public/video/<name>.mp4 경로(배포 base 반영) */
+/** 모바일/세로 뷰포트 여부 → 세로(9:16) 컷신 변형 사용 */
+function isMobileViewport(): boolean {
+  return window.innerWidth < 700 || window.innerHeight > window.innerWidth;
+}
+
+/** public/video/<name>[-mobile].mp4 경로(배포 base·기기 반영) */
 export function cutsceneUrl(name: string): string {
-  return `${import.meta.env.BASE_URL}video/${name}.mp4`;
+  const suffix = isMobileViewport() ? '-mobile' : '';
+  return `${import.meta.env.BASE_URL}video/${name}${suffix}.mp4`;
 }
 
 export interface CutsceneHandle {
