@@ -49,6 +49,17 @@ public/                # 자작 SVG 파비콘 · og.png · CREDITS.md
 - 제출 전: `PROPOSAL_URL`(현재 빈 값→CTA 숨김)을 실제 제안서 링크로 교체.
 - 접근성: OS reduced-motion 자동 대응 + `?reduce=1` 강제 토글, 키보드 진행, 기본 음소거.
 
+### 시네마틱 3D (WebGL)
+본편은 **Three.js + postprocessing**로 영화급 렌더링: 필믹 톤매핑·블룸·피사계심도·색보정·비네팅·필름그레인·god rays·**레이마칭 볼류메트릭 CT 뇌**(high 티어). 품질 티어 자동감지 + FPS 자동강등, `?quality=high|mid|low`·`?nodegrade`·`?reduce=1` 디버그. 전부 자작 셰이더/지오메트리(무에셋). WebGL 미지원·reduced-motion 시 2D 폴백.
+
+### 트레일러 (옵션 · Remotion)
+`trailer/`는 78초 시네마틱 트레일러(1920×1080) — 본편과 카피/디자인 공유.
+```bash
+npm install --prefix trailer
+npm run render --prefix trailer   # → trailer/out/trailer.mp4
+# 미리보기 스튜디오: npm run studio --prefix trailer
+```
+
 코드 라이선스: [MIT](LICENSE). 에셋 출처: [`public/CREDITS.md`](public/CREDITS.md).
 
 ---
