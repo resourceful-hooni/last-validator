@@ -1,3 +1,4 @@
+import './loadFonts';
 import { Composition } from 'remotion';
 import { Trailer, TRAILER_FPS, TRAILER_DURATION } from './Trailer';
 import { Intro, INTRO_DURATION } from './Intro';
