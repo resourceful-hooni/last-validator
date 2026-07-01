@@ -73,8 +73,8 @@ export function createPipeline(
       ? null
       : new DepthOfFieldEffect(camera, {
           worldFocusDistance: 12,
-          worldFocusRange: tier === 'high' ? 6 : 9,
-          bokehScale: tier === 'high' ? 3.2 : 2.2,
+          worldFocusRange: tier === 'high' ? 9 : 11,
+          bokehScale: tier === 'high' ? 2.4 : 1.8,
           resolutionScale: tier === 'high' ? 0.75 : 0.5,
         });
 

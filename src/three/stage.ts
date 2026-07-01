@@ -12,6 +12,7 @@ import * as THREE from 'three';
 import { prefersReducedMotion } from '../engine/motion';
 import type { Branch } from '../data/script';
 import { createBrainHero, type BrainHero } from './brainHero';
+import { createVolumeBrain } from './volumeBrain';
 import { createPipeline, type Pipeline } from './pipeline';
 import { detectTier, TIER_DPR, FpsMonitor, type Tier } from './quality';
 import { buildEnvironment, type Environment } from './environment';
@@ -87,6 +88,7 @@ class WebGLStage implements Stage {
   private readonly fog: THREE.FogExp2;
 
   private hero: BrainHero | null = null;
+  private heroBranch: Branch | null = null;
   private heroGroup = new THREE.Group();
 
   private raf = 0;
@@ -210,7 +212,9 @@ class WebGLStage implements Stage {
 
   showBrain(branch: Branch): void {
     this.clearHero();
-    this.hero = createBrainHero(branch, this.tier);
+    this.heroBranch = branch;
+    // high 티어: 레이마칭 볼류메트릭 CT / 그 외: 반투명 메시 뇌
+    this.hero = this.tier === 'high' ? createVolumeBrain(branch) : createBrainHero(branch, this.tier);
     this.heroGroup.add(this.hero.object);
     if (this.reduced) {
       this.hero.setProgress(1);
@@ -224,6 +228,7 @@ class WebGLStage implements Stage {
       this.hero.dispose();
       this.hero = null;
     }
+    this.heroBranch = null;
   }
 
   warp(on: boolean): void {
@@ -306,10 +311,13 @@ class WebGLStage implements Stage {
   /** FPS 저하 시 티어 하향(포스트 재구성). high→mid→low 단방향. */
   private degrade(): void {
     if (this.tier === 'low') return;
+    const wasHigh = this.tier === 'high';
     this.tier = this.tier === 'high' ? 'mid' : 'low';
     console.info('[stage] degrade →', this.tier);
     this.pipeline.dispose();
     this.pipeline = createPipeline(this.renderer, this.scene, this.camera, this.tier);
+    // high에서 내려오면 볼류메트릭 뇌 → 가벼운 메시 뇌로 교체
+    if (wasHigh && this.heroBranch) this.showBrain(this.heroBranch);
     this.resize();
     this.fps.reset();
   }
