@@ -3,7 +3,9 @@ import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } fr
 import { C, FONT } from './theme';
 import { Overlays } from './overlays';
 
-export const INTRO_DURATION = 30 * 8; // 8s
+// 5s 시네마틱 프롤로그. S0와 문구가 겹치지 않도록 키커/리드 문장은 넣지 않는다
+// (그 텍스트들은 S0 타이틀 화면이 담당). 여기선 타이틀 리빌 + '초록불' 모티프만.
+export const INTRO_DURATION = 30 * 5; // 5s
 
 export const Intro: React.FC = () => {
   const frame = useCurrentFrame();
@@ -11,11 +13,10 @@ export const Intro: React.FC = () => {
   const portrait = height >= width;
   const S = (land: number, port: number): number => (portrait ? port : land);
 
-  const kicker = interpolate(frame, [18, 42], [0, 1], { extrapolateRight: 'clamp' });
   const chars = [...'마지막 검증자'];
-  const lead = interpolate(frame, [120, 150], [0, 1], { extrapolateRight: 'clamp' });
-  const outFade = interpolate(frame, [200, 240], [1, 0], { extrapolateLeft: 'clamp' });
   const dots = [0, 1, 2, 3];
+  const push = interpolate(frame, [0, 150], [1.06, 1.0], { extrapolateRight: 'clamp' });
+  const outFade = interpolate(frame, [120, 150], [1, 0], { extrapolateLeft: 'clamp' });
 
   return (
     <AbsoluteFill style={{ background: C.bg, opacity: outFade }}>
@@ -24,18 +25,16 @@ export const Intro: React.FC = () => {
           justifyContent: 'center',
           alignItems: 'center',
           flexDirection: 'column',
-          gap: S(30, 40),
+          gap: S(40, 48),
           fontFamily: FONT,
           padding: S(80, 50),
+          transform: `scale(${push})`,
         }}
       >
-        <div style={{ opacity: kicker, color: C.mut2, letterSpacing: S(12, 8), fontSize: S(26, 30) }}>
-          PRE-MORTEM · 인터랙티브
-        </div>
         <div
           style={{
             display: 'flex',
-            fontSize: S(138, 108),
+            fontSize: S(150, 116),
             fontWeight: 800,
             letterSpacing: -3,
             color: C.txt,
@@ -45,23 +44,24 @@ export const Intro: React.FC = () => {
           }}
         >
           {chars.map((ch, i) => {
-            const s = spring({ frame: frame - 30 - i * 4, fps, config: { damping: 200 } });
+            const s = spring({ frame: frame - 12 - i * 5, fps, config: { damping: 200 } });
             return (
-              <span key={i} style={{ opacity: s, transform: `translateY(${(1 - s) * 26}px)`, whiteSpace: 'pre' }}>
+              <span key={i} style={{ opacity: s, transform: `translateY(${(1 - s) * 30}px)`, whiteSpace: 'pre' }}>
                 {ch}
               </span>
             );
           })}
         </div>
-        <div style={{ opacity: lead, display: 'flex', gap: S(16, 14), alignItems: 'center' }}>
+        {/* 대시보드가 '전부 초록'으로 켜지고 — 하나만 붉게. 작품의 핵심 은유(텍스트 없음). */}
+        <div style={{ display: 'flex', gap: S(18, 16), alignItems: 'center' }}>
           {dots.map((d) => {
             const last = d === 3;
-            const on = interpolate(frame, [140 + d * 8, 152 + d * 8], [0, 1], {
+            const on = interpolate(frame, [58 + d * 9, 74 + d * 9], [0, 1], {
               extrapolateLeft: 'clamp',
               extrapolateRight: 'clamp',
             });
             const col = last ? C.red : C.green;
-            const sz = last ? S(20, 22) : S(16, 18);
+            const sz = last ? S(22, 24) : S(17, 19);
             return (
               <div
                 key={d}
@@ -70,15 +70,12 @@ export const Intro: React.FC = () => {
                   height: sz,
                   borderRadius: '50%',
                   background: col,
-                  opacity: 0.25 + on * 0.75,
-                  boxShadow: `0 0 ${12 + on * 18}px ${col}`,
+                  opacity: 0.22 + on * 0.78,
+                  boxShadow: `0 0 ${12 + on * 20}px ${col}`,
                 }}
               />
             );
           })}
-        </div>
-        <div style={{ opacity: lead, color: C.mut, fontSize: S(28, 30), textAlign: 'center' }}>
-          10년 뒤, 그 초록불의 대가를 보게 됩니다.
         </div>
       </AbsoluteFill>
       <Overlays />
