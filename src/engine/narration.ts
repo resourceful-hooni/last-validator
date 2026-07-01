@@ -1,29 +1,47 @@
 /**
- * narration.ts — 감정 낭독(사전 생성 Kokoro mp3) 재생 매니저. (사용자 요청)
- * - **영어(en) 로케일만** 클립 존재(오픈 감정 TTS가 한국어를 지원하지 않아 en 한정). 그 외 로케일은 무음(우아한 폴백).
- * - **옵트인 토글**(기본 OFF, localStorage) + 음소거 연동 + 첫 사용자 제스처 이후에만 재생(자동재생 정책).
- * - 씬 enter에서 start(), exit/teardown에서 stop() → 겹침·리플레이 누수 0.
- * - 자막=화면 텍스트가 이미 존재. 저작권: Kokoro(Apache-2.0)로 자작 생성(CREDITS 표기).
+ * narration.ts — 감정 낭독 매니저(하이브리드). (사용자 요청)
+ *  - **en**: Kokoro(Apache-2.0)로 사전 생성한 mp3 클립 재생(고품질·감정).
+ *  - **ko/zh/ja**: 브라우저 Web Speech(OS 음성) 런타임 낭독 — mood별 rate/pitch로 '절제된 무게감'.
+ *    (자연스러움은 기기 OS 음성 의존. 해당 언어 음성이 없으면 무음으로 스킵.)
+ *  - **옵트인 토글**(기본 OFF, localStorage) + 음소거 연동 + 첫 제스처 이후 재생.
+ *  - 씬 enter→start / exit·teardown→stop (겹침·리플레이 누수 0). 자막=화면 텍스트 상시.
+ *  - 저작권: en 클립=Kokoro 자작 생성(CREDITS). Web Speech=OS 음성 런타임(에셋 0).
  */
-import { getLocale, onLocaleChange } from '../i18n';
+import { getLocale, onLocaleChange, t } from '../i18n';
 import { state } from './state';
 import type { Branch } from '../data/script';
 
 const BASE = import.meta.env.BASE_URL;
 const safe = (k: string): string => k.replace(/\./g, '_');
-const clipUrl = (key: string): string => `${BASE}audio/narration/en/${safe(key)}.mp3`;
+const clipUrl = (k: string): string => `${BASE}audio/narration/en/${safe(k)}.mp3`;
 
-let enabled = false; // 낭독 토글
+type Mood = 'grave' | 'somber' | 'tense' | 'calm' | 'hope';
+/** mood → Web Speech 운율(절제된 감정). en 클립은 생성 시 이미 속도 반영됨. */
+const PROSODY: Record<Mood, { rate: number; pitch: number }> = {
+  grave: { rate: 0.82, pitch: 0.92 },
+  somber: { rate: 0.88, pitch: 0.96 },
+  tense: { rate: 0.9, pitch: 1.0 },
+  calm: { rate: 0.92, pitch: 1.0 },
+  hope: { rate: 0.96, pitch: 1.03 },
+};
+interface Seg {
+  key: string;
+  mood: Mood;
+  delayMs: number;
+}
+
+let enabled = false;
 try {
   enabled = localStorage.getItem('narration') === 'on';
 } catch {
   /* private mode */
 }
-let muted = false; // 전역 음소거 미러(main.ts가 onMuteChange로 동기화)
-let started = false; // 첫 제스처(오디오 활성) 여부
+let muted = false;
+let started = false;
 
-let audioEl: HTMLAudioElement | null = null;
-let seq: Array<{ key: string; delayMs: number }> = [];
+let curAudio: HTMLAudioElement | null = null;
+let speaking = false;
+let seq: Seg[] = [];
 let seqIdx = 0;
 let timer: number | undefined;
 const listeners = new Set<(on: boolean) => void>();
@@ -34,7 +52,6 @@ export function onNarrationChange(cb: (on: boolean) => void): () => void {
   return () => listeners.delete(cb);
 }
 
-/** 토글 설정(+localStorage 영속). 끄면 즉시 정지. */
 export function setNarration(on: boolean): void {
   if (enabled === on) return;
   enabled = on;
@@ -47,45 +64,51 @@ export function setNarration(on: boolean): void {
   listeners.forEach((cb) => cb(on));
 }
 
-/** 음소거 미러 갱신(main.ts에서 onMuteChange로 연결). */
 export function setNarrationMuted(m: boolean): void {
   muted = m;
   if (m) stop();
 }
 
-/** 첫 사용자 제스처에서 호출(자동재생 정책). */
 export function markStarted(): void {
   started = true;
 }
 
-/** 로케일 변경 시 정지(en만 클립). main.ts에서 init. */
 export function initNarration(): void {
   onLocaleChange(() => stop());
+  // Web Speech 음성 목록 워밍업(첫 getVoices()는 비어있을 수 있음)
+  const synth = window.speechSynthesis;
+  if (synth) {
+    synth.getVoices();
+    synth.addEventListener?.('voiceschanged', () => synth.getVoices());
+  }
 }
 
-/** 씬+상태 → 낭독 클립 시퀀스. en 외에는 빈 배열. */
-function planFor(sceneId: string): Array<{ key: string; delayMs: number }> {
-  if (getLocale() !== 'en') return [];
+/** 씬+상태 → 낭독 세그먼트(모든 로케일 공통 키). */
+function planFor(sceneId: string): Seg[] {
   const branch: Branch = state.endingBranch();
   const v = state.vCap;
   switch (sceneId) {
-    case 's7':
-      return [{ key: v >= 70 ? 's7.msgHigh' : v >= 40 ? 's7.msgMid' : 's7.msgLow', delayMs: 1200 }];
-    case 's9':
-      return [{ key: `s9.${branch}.body`, delayMs: 700 }];
+    case 's7': {
+      const key = v >= 70 ? 's7.msgHigh' : v >= 40 ? 's7.msgMid' : 's7.msgLow';
+      const mood: Mood = v >= 70 ? 'hope' : v >= 40 ? 'somber' : 'grave';
+      return [{ key, mood, delayMs: 1200 }];
+    }
+    case 's9': {
+      const mood: Mood = branch === 'tragedy' ? 'grave' : branch === 'nearmiss' ? 'tense' : 'hope';
+      return [{ key: `s9.${branch}.body`, mood, delayMs: 700 }];
+    }
     case 's10':
       return [
-        { key: `s10.verdict.${branch}`, delayMs: 500 },
-        { key: 's12.thesis1', delayMs: 500 },
-        { key: 's12.thesis2', delayMs: 250 },
-        { key: 's12.body', delayMs: 450 },
+        { key: `s10.verdict.${branch}`, mood: branch === 'tragedy' ? 'grave' : branch === 'nearmiss' ? 'somber' : 'hope', delayMs: 500 },
+        { key: 's12.thesis1', mood: 'calm', delayMs: 500 },
+        { key: 's12.thesis2', mood: 'grave', delayMs: 250 },
+        { key: 's12.body', mood: 'hope', delayMs: 450 },
       ];
     default:
       return [];
   }
 }
 
-/** 씬 진입 시 호출. 조건 미충족 시 무음. */
 export function start(sceneId: string): void {
   stop();
   if (!enabled || muted || !started) return;
@@ -96,24 +119,87 @@ export function start(sceneId: string): void {
 
 function playNext(): void {
   if (seqIdx >= seq.length) {
-    audioEl = null;
+    curAudio = null;
     return;
   }
-  const { key, delayMs } = seq[seqIdx++]!;
+  const { key, mood, delayMs } = seq[seqIdx++]!;
   timer = window.setTimeout(() => {
     if (!enabled || muted) return;
-    const el = new Audio(clipUrl(key));
-    audioEl = el;
-    let advanced = false;
-    const advance = (): void => {
-      if (advanced) return;
-      advanced = true;
-      if (audioEl === el) playNext(); // stop() 이후엔 무시
-    };
-    el.addEventListener('ended', advance);
-    el.addEventListener('error', advance); // 클립 부재/로드 실패 → 다음
-    void el.play().catch(advance); // 자동재생 차단 등 → 다음
+    if (getLocale() === 'en') playClip(key);
+    else speakSegment(key, mood);
   }, delayMs);
+}
+
+/** en: 사전 생성 mp3 클립. */
+function playClip(key: string): void {
+  const el = new Audio(clipUrl(key));
+  curAudio = el;
+  let done = false;
+  const advance = (): void => {
+    if (done) return;
+    done = true;
+    if (curAudio === el) playNext();
+  };
+  el.addEventListener('ended', advance);
+  el.addEventListener('error', advance);
+  void el.play().catch(advance);
+}
+
+/* ── Web Speech (ko/zh/ja) ── */
+const VOICE_LANG: Record<string, string> = { ko: 'ko-KR', zh: 'zh-CN', ja: 'ja-JP', en: 'en-US' };
+const PREF = /google|natural|neural|siri|yuna|nari|sora|kyoko|o-?ren|nanami|xiao|ting|mei|premium|enhanced|online/i;
+
+/** 현재 로케일에서 가장 자연스러운 음성 선택(없으면 undefined → 무음 스킵). */
+function bestVoice(locale: string): SpeechSynthesisVoice | undefined {
+  const synth = window.speechSynthesis;
+  if (!synth) return undefined;
+  const want = (VOICE_LANG[locale] ?? locale).toLowerCase();
+  const byLang = synth.getVoices().filter((vc) => (vc.lang || '').replace('_', '-').toLowerCase().startsWith(locale));
+  if (!byLang.length) return undefined;
+  const exact = byLang.filter((vc) => (vc.lang || '').toLowerCase() === want);
+  const pool = exact.length ? exact : byLang;
+  return pool.find((vc) => PREF.test(vc.name)) ?? pool.find((vc) => !vc.localService) ?? pool[0];
+}
+
+const stripTokens = (s: string): string =>
+  s.replace(/<\/?(?:em|gn|rd)>/g, '').replace(/\s*\n\s*/g, ' ').replace(/\s+/g, ' ').trim();
+/** 문장 단위 분해(Chrome의 장문 절단 회피 + 자연 호흡). */
+const toSentences = (s: string): string[] =>
+  s.split(/(?<=[.!?。！？])\s+/).map((x) => x.trim()).filter(Boolean);
+
+function speakSegment(key: string, mood: Mood): void {
+  const synth = window.speechSynthesis;
+  const loc = getLocale();
+  const text = stripTokens(t(key));
+  const voice = synth ? bestVoice(loc) : undefined;
+  if (!synth || !text || !voice) {
+    playNext(); // 음성/텍스트 없으면 스킵(무음)
+    return;
+  }
+  const parts = toSentences(text);
+  const { rate, pitch } = PROSODY[mood];
+  let i = 0;
+  speaking = true;
+  const speakPart = (): void => {
+    if (!enabled || muted || i >= parts.length) {
+      speaking = false;
+      playNext();
+      return;
+    }
+    const u = new SpeechSynthesisUtterance(parts[i++]!);
+    u.voice = voice;
+    u.lang = voice.lang;
+    u.rate = rate;
+    u.pitch = pitch;
+    u.volume = 1;
+    u.onend = speakPart;
+    u.onerror = () => {
+      speaking = false;
+      playNext();
+    };
+    synth.speak(u);
+  };
+  speakPart();
 }
 
 /** 재생 취소(씬 이탈·리플레이·음소거·언어변경). 겹침·누수 0. */
@@ -122,10 +208,14 @@ export function stop(): void {
     window.clearTimeout(timer);
     timer = undefined;
   }
-  if (audioEl) {
-    audioEl.pause();
-    audioEl.src = '';
-    audioEl = null;
+  if (curAudio) {
+    curAudio.pause();
+    curAudio.src = '';
+    curAudio = null;
+  }
+  if (speaking && window.speechSynthesis) {
+    window.speechSynthesis.cancel();
+    speaking = false;
   }
   seq = [];
   seqIdx = 0;

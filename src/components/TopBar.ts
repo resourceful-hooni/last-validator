@@ -3,7 +3,7 @@
  * (TECH_SPEC §9, DESIGN_SYSTEM §8/§9, TASKS Phase 0.5)
  * 오디오 매니저는 Phase 7. 여기서는 토글 UI/상태만 둔다(기본 음소거).
  */
-import { t, onLocaleChange, getLocale } from '../i18n';
+import { t, onLocaleChange } from '../i18n';
 import { createLangSwitcher } from './LangSwitcher';
 import { activateAudio } from '../engine/audio';
 import { isNarrationEnabled, setNarration, onNarrationChange, markStarted } from '../engine/narration';
@@ -68,7 +68,6 @@ export function createTopBar(): HTMLElement {
     narrateBtn.setAttribute('aria-label', on ? t('ui.narrate.off') : t('ui.narrate.on'));
     narrateBtn.setAttribute('aria-pressed', String(on));
     narrateBtn.classList.toggle('is-active', on);
-    narrateBtn.style.display = getLocale() === 'en' ? '' : 'none';
   };
   narrateBtn.addEventListener('click', () => {
     activateAudio(); // 클릭=제스처 → 오디오 활성
