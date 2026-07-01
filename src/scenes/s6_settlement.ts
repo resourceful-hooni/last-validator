@@ -25,7 +25,7 @@ export function createS6Settlement(): Scene {
 
       container.innerHTML = `
         <p class="scene__kicker">${renderPlain(t('s6.kicker'))}</p>
-        <h2 class="scene__title scene__title--hero s6-head">${renderRich(t('s6.headline'))}</h2>
+        <h1 class="scene__title scene__title--hero s6-head">${renderRich(t('s6.headline'))}</h1>
         <div class="s6-board"></div>
         <p class="scene__body s6-line">${renderPlain(t('s6.body1'))}</p>
         <p class="scene__body s6-line">${renderRich(t('s6.body2'))}</p>
@@ -33,7 +33,10 @@ export function createS6Settlement(): Scene {
       `;
       container.querySelector('.s6-board')!.appendChild(board.el);
 
-      container.querySelector('[data-next]')?.addEventListener('click', () => {
+      const nextBtn = container.querySelector<HTMLButtonElement>('[data-next]');
+      nextBtn?.addEventListener('click', () => {
+        if (nextBtn.disabled) return; // 더블클릭 시 오버레이 중복 예약 방지
+        nextBtn.disabled = true;
         // 초록 정점 → 암전 → S7
         flashTransition('black', () => void ctx.engine.next('s7'));
       });

@@ -1,0 +1,17 @@
+「마지막 검증자」 — 감정 낭독 오디오 출처/라이선스 (NOTICE)
+
+■ 영어(en) 낭독 클립 (public/audio/narration/en/*.mp3)
+- 본 작품의 영어 카피(src/locales/en.json)를 오프라인에서 자체 합성한 산출물.
+- 합성 모델: Kokoro-82M v1.0 (ONNX: onnx-community/Kokoro-82M-v1.0-ONNX)
+    · 모델 라이선스: Apache License 2.0 (동봉: LICENSE-Apache-2.0.txt)
+    · 상업 사용·재배포 허용. 생성 오디오는 통상 이용자 저작물로 취급.
+- 보이스: af_heart.  라이브러리: kokoro-js (npm).  mp3 인코딩: @breezystack/lamejs.
+- 생성 스크립트: scripts/generate-narration.mjs
+- 외부 성우·상업 TTS·타인 음성 미포함.
+
+■ 한국어/중국어/일본어 낭독
+- 사전 생성 오디오 없음. 런타임에 브라우저 Web Speech API(사용자 기기 OS 음성)로 낭독.
+- 임베드 에셋 0 (시스템 폰트와 동일한 런타임 OS 기능). 저작권 이슈 없음.
+
+■ 참고
+- 낭독은 옵트인(기본 OFF)·음소거 연동. 모든 대사는 화면 텍스트(자막)로 상시 제공.

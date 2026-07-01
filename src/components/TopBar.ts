@@ -52,13 +52,12 @@ export function createTopBar(): HTMLElement {
     muted = !muted;
     syncMute();
     muteListeners.forEach((cb) => cb(muted));
-    muteBtn.classList.remove('is-hint');
   });
   onLocaleChange(syncMute);
   syncUI = syncMute;
   syncMute();
 
-  // 낭독 토글 — 감정 낭독 클립은 영어만 존재 → en 로케일에서만 노출(그 외 무음).
+  // 낭독 토글 — en=사전생성 mp3, ko/zh/ja=Web Speech(OS 음성). 전 로케일 노출, 음성 없으면 무음 스킵.
   const narrateBtn = document.createElement('button');
   narrateBtn.type = 'button';
   narrateBtn.className = 'top-bar__mute top-bar__narrate';

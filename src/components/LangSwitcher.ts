@@ -17,7 +17,8 @@ export function createLangSwitcher(): HTMLElement {
     const cur = getLocale();
     buttons.forEach((btn, loc) => {
       const active = loc === cur;
-      btn.setAttribute('aria-pressed', String(active));
+      if (active) btn.setAttribute('aria-current', 'true'); // 현재 언어 semantics(토글 aria-pressed보다 정확)
+      else btn.removeAttribute('aria-current');
       btn.classList.toggle('is-active', active);
     });
   };
@@ -28,7 +29,6 @@ export function createLangSwitcher(): HTMLElement {
     btn.className = 'lang-switcher__btn';
     btn.lang = loc;
     btn.textContent = LOCALE_LABELS[loc];
-    btn.setAttribute('aria-pressed', 'false');
     btn.addEventListener('click', () => {
       if (loc !== getLocale()) void setLocale(loc);
     });

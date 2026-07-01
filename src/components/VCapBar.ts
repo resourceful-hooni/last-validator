@@ -8,7 +8,7 @@ import { countTo, prefersReducedMotion } from '../engine/motion';
 import { gsap } from 'gsap';
 
 function thresholdClass(v: number): 'high' | 'mid' | 'low' {
-  return v > 70 ? 'high' : v > 40 ? 'mid' : 'low';
+  return v >= 70 ? 'high' : v >= 40 ? 'mid' : 'low'; // 경계 통일(endingBranch/s7과 일치)
 }
 
 export class VCapBar {
@@ -16,6 +16,7 @@ export class VCapBar {
   private readonly labelEl: HTMLSpanElement;
   private readonly valueEl: HTMLSpanElement;
   private readonly fillEl: HTMLDivElement;
+  private readonly liveEl: HTMLSpanElement;
   private shownValue = 100;
   private killed = false;
 
@@ -37,7 +38,12 @@ export class VCapBar {
     this.fillEl.className = 'vcap__fill';
     track.appendChild(this.fillEl);
 
-    this.el.append(head, track);
+    // 스크린리더 알림(시각 카운트업 틱과 별개로 목표값·측정중단만 polite 알림)
+    this.liveEl = document.createElement('span');
+    this.liveEl.className = 'sr-only';
+    this.liveEl.setAttribute('aria-live', 'polite');
+
+    this.el.append(head, track, this.liveEl);
     this.applyThreshold(100);
     this.syncText();
     this.fillEl.style.width = '100%';
@@ -58,6 +64,7 @@ export class VCapBar {
   setValue(v: number, animate: boolean): void {
     if (this.killed) return;
     this.applyThreshold(v);
+    this.liveEl.textContent = `${t('ui.vcap')} ${Math.round(v)}%`; // SR: 목표값
     if (animate && !prefersReducedMotion()) {
       gsap.to(this.fillEl, { width: `${v}%`, duration: 0.7, ease: 'power2.inOut' });
       countTo(this.shownValue, v, (n) => {
@@ -76,6 +83,7 @@ export class VCapBar {
     this.killed = true;
     this.el.dataset.threshold = 'off';
     this.valueEl.textContent = t('ui.vcap.off');
+    this.liveEl.textContent = `${t('ui.vcap')}: ${t('ui.vcap.off')}`; // SR: 측정 중단(경보 꺼짐)
     if (animate && !prefersReducedMotion()) {
       gsap.to(this.el, { opacity: 0.32, duration: 0.6, ease: 'power2.inOut' });
     } else {

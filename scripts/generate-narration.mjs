@@ -1,7 +1,7 @@
 /**
  * generate-narration.mjs — 영어 감정 낭독 클립 사전 생성(Kokoro, Apache-2.0 오픈웨이트).
  * en.json 원문 → 토큰 제거 → Kokoro(af_heart, mood별 속도) 합성 → mp3(lamejs) → public/audio/narration/en/.
- * 한국어/중/일은 오픈 감정 TTS 부재로 낭독 없음(무음, 우아한 폴백). 실행: node scripts/generate-narration.mjs
+ * 이 스크립트는 en 클립만 생성. ko/zh/ja는 런타임 Web Speech(src/engine/narration.ts)가 담당. 실행: node scripts/generate-narration.mjs
  * 모델은 최초 1회 다운로드(캐시). 카피 수정 시 재실행.
  */
 import { KokoroTTS } from 'kokoro-js';

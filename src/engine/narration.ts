@@ -41,6 +41,7 @@ let started = false;
 
 let curAudio: HTMLAudioElement | null = null;
 let speaking = false;
+let gen = 0; // 발화 세대 토큰 — stop() 시 증가, 취소된 utterance의 지연 onend 무효화
 let seq: Seg[] = [];
 let seqIdx = 0;
 let timer: number | undefined;
@@ -163,9 +164,9 @@ function bestVoice(locale: string): SpeechSynthesisVoice | undefined {
 
 const stripTokens = (s: string): string =>
   s.replace(/<\/?(?:em|gn|rd)>/g, '').replace(/\s*\n\s*/g, ' ').replace(/\s+/g, ' ').trim();
-/** 문장 단위 분해(Chrome의 장문 절단 회피 + 자연 호흡). */
+/** 문장 단위 분해(Chrome의 장문 절단 회피 + 자연 호흡). ASCII 종결부호는 뒤 공백 필요, CJK(。！？)는 공백 없이 분리. */
 const toSentences = (s: string): string[] =>
-  s.split(/(?<=[.!?。！？])\s+/).map((x) => x.trim()).filter(Boolean);
+  s.split(/(?<=[.!?])\s+|(?<=[。！？])/).map((x) => x.trim()).filter(Boolean);
 
 function speakSegment(key: string, mood: Mood): void {
   const synth = window.speechSynthesis;
@@ -180,7 +181,9 @@ function speakSegment(key: string, mood: Mood): void {
   const { rate, pitch } = PROSODY[mood];
   let i = 0;
   speaking = true;
+  const myGen = gen;
   const speakPart = (): void => {
+    if (myGen !== gen) return; // stop() 이후 취소된 세대 — 무시(겹침 방지)
     if (!enabled || muted || i >= parts.length) {
       speaking = false;
       playNext();
@@ -204,6 +207,7 @@ function speakSegment(key: string, mood: Mood): void {
 
 /** 재생 취소(씬 이탈·리플레이·음소거·언어변경). 겹침·누수 0. */
 export function stop(): void {
+  gen++; // 진행 중 발화 세대 무효화(취소된 utterance의 지연 onend 차단)
   if (timer) {
     window.clearTimeout(timer);
     timer = undefined;

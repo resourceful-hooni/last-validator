@@ -39,6 +39,7 @@ export function playCutscene(src: string): CutsceneHandle {
   video.playsInline = true;
   video.setAttribute('playsinline', '');
   video.setAttribute('preload', 'auto');
+  video.setAttribute('aria-hidden', 'true'); // 장식성 시네마틱(내용은 씬 DOM에 존재) — SR은 스킵 버튼으로 접근
 
   const skip = document.createElement('button');
   skip.type = 'button';
@@ -71,14 +72,23 @@ export function playCutscene(src: string): CutsceneHandle {
   video.addEventListener('error', () => finish('error'));
   skip.addEventListener('click', () => finish('skipped'));
 
-  // 자동재생(음소거)은 대부분 허용. 실패해도 스킵/ended로 처리.
-  void video.play().catch(() => {
-    /* 제스처 필요 시 사용자가 스킵 가능 */
+  // 재생이 실제 시작됐는지 추적(느린 버퍼링을 실패로 오판하지 않도록)
+  let playing = false;
+  video.addEventListener('playing', () => (playing = true));
+  video.addEventListener('timeupdate', () => {
+    if (video.currentTime > 0) playing = true;
   });
+  // 자동재생(음소거)은 대부분 허용. 실패해도 스킵/ended로 처리.
+  void video
+    .play()
+    .then(() => (playing = true))
+    .catch(() => {
+      /* 제스처 필요 시 사용자가 스킵 가능 */
+    });
 
-  // 안전망: 로드 실패 또는 자동재생 차단(로드됐지만 재생 안 됨) → error(폴백/진행)
+  // 안전망: 재생이 시작되지 않았고(!playing) 로드/자동재생도 안 된 경우만 → error(폴백/진행)
   const guard = window.setTimeout(() => {
-    if (!done && (video.readyState < 2 || (video.paused && video.currentTime === 0))) finish('error');
+    if (!done && !playing && (video.readyState < 2 || (video.paused && video.currentTime === 0))) finish('error');
   }, 2500);
 
   return {

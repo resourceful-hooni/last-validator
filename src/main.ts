@@ -5,7 +5,7 @@
 import './styles/tokens.css';
 import './styles/base.css';
 
-import { initI18n, onLocaleChange, injectAlternateLinks } from './i18n';
+import { initI18n, onLocaleChange, injectAlternateLinks, getLocale } from './i18n';
 import { createTopBar, onMuteChange } from './components/TopBar';
 import { setMuted, audioState, activateAudio } from './engine/audio';
 import { setMute } from './components/TopBar';
@@ -22,13 +22,35 @@ import { registerActTwoScenes } from './scenes';
 import { state as stateRef } from './engine/state';
 import type { Stage } from './three/stage';
 
+/** 현재 로케일 서브셋 폰트 1개만 preload(FOUT·첫 텍스트 지연 완화). @font-face URL과 동일 경로. */
+const LOCALE_FONT: Record<string, string> = {
+  ko: 'pretendard-subset',
+  en: 'pretendard-subset',
+  zh: 'noto-sc-subset',
+  ja: 'noto-jp-subset',
+};
+function preloadActiveLocaleFont(): void {
+  const name = LOCALE_FONT[getLocale()] ?? 'pretendard-subset';
+  const link = document.createElement('link');
+  link.rel = 'preload';
+  link.as = 'font';
+  link.type = 'font/woff2';
+  link.href = `/fonts/${name}.woff2`;
+  link.crossOrigin = 'anonymous';
+  document.head.appendChild(link);
+}
+
 async function boot(): Promise<void> {
   const app = document.querySelector<HTMLDivElement>('#app');
   if (!app) return;
   app.replaceChildren();
 
+  // 3D 스테이지 청크(≈917KB) 조기 프리페치 — 셋업과 병렬 다운로드로 첫 3D 렌더 지연 완화
+  const stageMod = import('./three/stage').catch(() => null);
+
   await initI18n();
   injectAlternateLinks();
+  preloadActiveLocaleFont();
 
   document.body.appendChild(createTopBar());
   initNarration();
@@ -81,8 +103,8 @@ async function boot(): Promise<void> {
 
   // 3D 배경 스테이지 초기화(동적 import → three는 별도 청크). 미지원 시 null(2D 유지).
   try {
-    const { initStage } = await import('./three/stage');
-    shared.stage = await initStage();
+    const mod = await stageMod;
+    if (mod) shared.stage = await mod.initStage();
   } catch (e) {
     console.warn('[main] stage init failed, 2D fallback', e);
   }

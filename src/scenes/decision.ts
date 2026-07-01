@@ -37,7 +37,7 @@ export function createDecisionScene(d: DecisionScene, index: number): Scene {
 
       container.innerHTML = `
         <p class="scene__meta">${renderPlain(t(d.metaKey))}</p>
-        <h2 class="scene__title">${renderPlain(t(d.titleKey))}</h2>
+        <h1 class="scene__title">${renderPlain(t(d.titleKey))}</h1>
         <p class="scene__body">${renderRich(t(d.bodyKey))}</p>
         <div class="slot"></div>
       `;

@@ -11,7 +11,8 @@ import { state } from '../engine/state';
 import './scene.css';
 
 function threshold(v: number): 'high' | 'mid' | 'low' {
-  return v > 70 ? 'high' : v > 40 ? 'mid' : 'low';
+  // messageKey / state.endingBranch()와 경계 연산자 통일(vCap=40은 near-miss/mid)
+  return v >= 70 ? 'high' : v >= 40 ? 'mid' : 'low';
 }
 function messageKey(v: number): string {
   return v >= 70 ? 's7.msgHigh' : v >= 40 ? 's7.msgMid' : 's7.msgLow';

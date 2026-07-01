@@ -40,6 +40,12 @@ export function createS8Timejump(): Scene {
         void ctx.engine.next('s9');
       };
       container.addEventListener('click', advance);
+      container.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          advance(); // 키보드 사용자도 진행 가능(container는 전환 시 포커스됨)
+        }
+      });
 
       ctx.gsapCtx.add(() => {
         if (prefersReducedMotion()) {

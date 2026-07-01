@@ -2,7 +2,6 @@ import './loadFonts';
 import { Composition } from 'remotion';
 import { Trailer, TRAILER_FPS, TRAILER_DURATION } from './Trailer';
 import { Intro, INTRO_DURATION } from './Intro';
-import { Timejump, TIMEJUMP_DURATION } from './Timejump';
 import { Finale, FINALE_DURATION } from './Finale';
 
 export const RemotionRoot: React.FC = () => {
@@ -20,14 +19,6 @@ export const RemotionRoot: React.FC = () => {
         id="Intro"
         component={Intro}
         durationInFrames={INTRO_DURATION}
-        fps={30}
-        width={1920}
-        height={1080}
-      />
-      <Composition
-        id="Timejump"
-        component={Timejump}
-        durationInFrames={TIMEJUMP_DURATION}
         fps={30}
         width={1920}
         height={1080}

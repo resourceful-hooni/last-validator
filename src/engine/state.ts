@@ -11,14 +11,6 @@ import type { Branch, Choice, KpiIndex, Pick } from '../data/script';
 
 export type KpiStatus = 'neutral' | 'green' | 'amber';
 
-export interface StateSnapshot {
-  vCap: number;
-  eff: number;
-  greens: boolean[];
-  ambers: boolean[];
-  vbarKilled: boolean;
-}
-
 class GameState {
   vCap = 100;
   eff = 0;
@@ -59,16 +51,6 @@ class GameState {
 
   endingBranch(): Branch {
     return this.vCap < 35 ? 'tragedy' : this.vCap < 70 ? 'nearmiss' : 'averted';
-  }
-
-  snapshot(): StateSnapshot {
-    return {
-      vCap: this.vCap,
-      eff: this.eff,
-      greens: [...this.greens],
-      ambers: [...this.ambers],
-      vbarKilled: this.vbarKilled,
-    };
   }
 
   /** 리플레이 — 완전 초기화 */

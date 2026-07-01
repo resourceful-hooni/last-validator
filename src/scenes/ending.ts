@@ -36,7 +36,7 @@ export function createEnding(): Scene {
 
       container.innerHTML = `
         <p class="scene__kicker">${renderPlain(t('s10.kicker'))}</p>
-        <h2 class="scene__title ending-verdict" data-branch="${branch}">${renderPlain(t(`s10.verdict.${branch}`))}</h2>
+        <h1 class="scene__title ending-verdict" data-branch="${branch}">${renderPlain(t(`s10.verdict.${branch}`))}</h1>
         <p class="scene__body ending-intro">${renderPlain(t('s10.intro'))}</p>
         <div class="trace-list"></div>
 

@@ -45,24 +45,3 @@
   color: var(--green);
   border-color: color-mix(in srgb, var(--green) 45%, var(--glass-border));
 }
-
-/* 소리 사용 가능 힌트 — 첫 진입 시 몇 회 펄스 */
-.top-bar__mute.is-hint {
-  animation: mute-hint 1.5s var(--ease-io) 1.5s 3;
-}
-@keyframes mute-hint {
-  0%,
-  100% {
-    box-shadow: var(--glass-shadow), inset 0 1px 0 var(--glass-hi), 0 0 0 0 var(--green-glow);
-    color: var(--mut);
-  }
-  50% {
-    box-shadow: var(--glass-shadow), inset 0 1px 0 var(--glass-hi), 0 0 0 6px transparent;
-    color: var(--green);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .top-bar__mute.is-hint {
-    animation: none;
-  }
-}
