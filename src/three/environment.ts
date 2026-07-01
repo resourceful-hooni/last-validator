@@ -23,10 +23,10 @@ export function buildEnvironment(renderer: THREE.WebGLRenderer, scene: THREE.Sce
   pmrem.dispose();
 
   // ── 라이팅 ──
-  const hemi = new THREE.HemisphereLight(0x9fb4c6, 0x05070a, 0.22);
+  const hemi = new THREE.HemisphereLight(0x9fb4c6, 0x05070a, 0.27);
 
   RectAreaLightUniformsLib.init();
-  const key = new THREE.RectAreaLight(0xcfe4f5, 2.2, 14, 10); // 차가운 소프트 키
+  const key = new THREE.RectAreaLight(0xcfe4f5, 2.6, 14, 10); // 차가운 소프트 키
   key.position.set(6, 7, 10);
   key.lookAt(0, 0, 0);
 

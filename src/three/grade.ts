@@ -45,7 +45,7 @@ export const LOOKS: Record<string, Look> = {
   clinical: { slope: [0.94, 1.0, 1.09], offset: [-0.012, 0.0, 0.02], power: [1.06, 1.0, 0.97], sat: 0.9, temp: -0.025, lift: 0.015 },
   green: { slope: [0.88, 1.12, 0.95], offset: [0.0, 0.02, -0.005], power: [1.03, 0.94, 1.05], sat: 1.06, temp: -0.015, lift: 0.02 },
   amber: { slope: [1.09, 1.0, 0.88], offset: [0.02, 0.0, -0.02], power: [0.98, 1.0, 1.05], sat: 0.96, temp: 0.03, lift: 0.02 },
-  red: { slope: [1.12, 0.9, 0.9], offset: [0.025, -0.01, -0.008], power: [0.96, 1.02, 1.03], sat: 0.85, temp: 0.012, lift: 0.01 },
+  red: { slope: [1.2, 0.83, 0.85], offset: [0.03, -0.014, -0.01], power: [0.95, 1.03, 1.03], sat: 0.98, temp: 0.022, lift: 0.016 },
   reveal: { slope: [1.0, 1.0, 1.02], offset: [0.0, 0.0, 0.0], power: [1.08, 1.05, 1.02], sat: 0.82, temp: -0.01, lift: 0.0 },
   cool: { slope: [0.92, 0.99, 1.12], offset: [-0.015, 0.0, 0.03], power: [1.08, 1.0, 0.95], sat: 0.88, temp: -0.035, lift: 0.02 },
 };

@@ -58,6 +58,32 @@ body::before {
   display: block;
 }
 
+/* 시네마스코프 레터박스 바 (ACT2에서 2.39:1 필름 프레이밍) */
+.letterbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  height: 0;
+  background: #000;
+  z-index: 90;
+  pointer-events: none;
+  transition: height 0.7s var(--ease-io);
+}
+.letterbar--top {
+  top: 0;
+}
+.letterbar--bottom {
+  bottom: 0;
+}
+body.cinemascope .letterbar {
+  height: clamp(26px, 7.5vh, 84px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .letterbar {
+    transition: none;
+  }
+}
+
 #app {
   position: relative;
   z-index: 1;

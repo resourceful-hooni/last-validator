@@ -15,6 +15,7 @@ import { createBrainHero, type BrainHero } from './brainHero';
 import { createPipeline, type Pipeline } from './pipeline';
 import { detectTier, TIER_DPR, FpsMonitor, type Tier } from './quality';
 import { buildEnvironment, type Environment } from './environment';
+import { gsap } from 'gsap';
 
 /** mood → 시네마틱 그레이드 룩 */
 const MOOD_LOOK: Record<Mood, string> = {
@@ -32,6 +33,24 @@ const MOOD_RIM: Record<Mood, number> = {
   green: 0x34c77b,
   amber: 0xe0a23a,
   red: 0xe24a3d,
+};
+
+/** 씬별 카메라/렌즈 프리셋 (시네마틱 프레이밍) */
+interface CamPreset {
+  pos: [number, number, number];
+  look: [number, number, number];
+  fov: number;
+  fog: number;
+  focus: number;
+}
+const CAM: Record<SceneKind, CamPreset> = {
+  ambient: { pos: [0, 0, 14], look: [0, 0, -2], fov: 55, fog: 0.055, focus: 14 },
+  title: { pos: [0, 0.6, 17], look: [0, 0.4, -2], fov: 50, fog: 0.045, focus: 17 },
+  dash: { pos: [0, 0, 15], look: [0, 0, -2], fov: 52, fog: 0.06, focus: 15 },
+  reveal: { pos: [0, 0, 11], look: [0, 0, -1], fov: 47, fog: 0.07, focus: 11 },
+  timejump: { pos: [0, 0, 9], look: [0, 0, -12], fov: 72, fog: 0.038, focus: 9 },
+  er: { pos: [1.8, 0.4, 10.5], look: [0, 0.15, 0], fov: 44, fog: 0.05, focus: 10 },
+  ending: { pos: [0, 0.2, 15], look: [0, 0.1, -2], fov: 50, fog: 0.062, focus: 15 },
 };
 
 export type Mood = 'cool' | 'neutral' | 'green' | 'amber' | 'red';
@@ -155,28 +174,38 @@ class WebGLStage implements Stage {
   }
 
   setScene(kind: SceneKind): void {
-    // 카메라 거리/포그로 장면 성격 표현
-    const conf: Record<SceneKind, { z: number; fog: number }> = {
-      ambient: { z: 14, fog: 0.055 },
-      title: { z: 16, fog: 0.045 },
-      dash: { z: 15, fog: 0.06 },
-      reveal: { z: 11, fog: 0.07 },
-      timejump: { z: 9, fog: 0.04 },
-      er: { z: 13, fog: 0.05 },
-      ending: { z: 15, fog: 0.065 },
-    };
-    const c = conf[kind];
-    this.camTargetZ = c.z;
+    const c = CAM[kind];
+    this.camTargetPos.set(c.pos[0], c.pos[1], c.pos[2]);
+    this.camLook.set(c.look[0], c.look[1], c.look[2]);
+    this.camTargetFov = c.fov;
     this.fogTarget = c.fog;
-    this.env.showFloor(kind === 'er' || kind === 'ending'); // 반사 바닥은 히어로 장면에서
+
+    const cinemascope = kind === 'timejump' || kind === 'er' || kind === 'ending';
+    document.body.classList.toggle('cinemascope', cinemascope);
+    this.env.showFloor(kind === 'er' || kind === 'ending');
+
+    // 초점: er은 랙포커스(안개→뇌로 초점 이동), 그 외 정적
+    if (kind === 'er' && !this.reduced) {
+      const proxy = { f: 22 };
+      this.pipeline.setFocus(proxy.f);
+      gsap.to(proxy, { f: c.focus, duration: 2.6, ease: 'power2.inOut', onUpdate: () => this.pipeline.setFocus(proxy.f) });
+    } else {
+      this.pipeline.setFocus(c.focus);
+    }
+
     if (this.reduced) {
-      this.camera.position.z = c.z;
+      this.camera.position.set(c.pos[0], c.pos[1], c.pos[2]);
+      this.camera.fov = c.fov;
+      this.camera.updateProjectionMatrix();
+      this.camera.lookAt(this.camLook);
       this.fog.density = c.fog;
       this.renderOnce();
     }
   }
 
-  private camTargetZ = 14;
+  private camTargetPos = new THREE.Vector3(0, 0, 14);
+  private camLook = new THREE.Vector3(0, 0, -2);
+  private camTargetFov = 55;
   private fogTarget = 0.055;
 
   showBrain(branch: Branch): void {
@@ -240,13 +269,23 @@ class WebGLStage implements Stage {
     this.fog.density += (this.fogTarget - this.fog.density) * (1 - Math.pow(0.01, d));
     this.warpAmt += (this.targetWarp - this.warpAmt) * (1 - Math.pow(0.02, d));
 
-    // 카메라 드리프트 + 포인터 시차
-    const px = this.pointer.x * 1.2;
-    const py = this.pointer.y * 0.8;
-    this.camera.position.x += (Math.sin(t * 0.15) * 0.8 + px - this.camera.position.x) * 0.02;
-    this.camera.position.y += (Math.cos(t * 0.12) * 0.5 + py - this.camera.position.y) * 0.02;
-    this.camera.position.z += (this.camTargetZ - this.camera.position.z) * 0.03;
-    this.camera.lookAt(0, 0, -2);
+    // 카메라: 프리셋으로 이동 + 포인터 시차 + 핸드헬드 미세 흔들림
+    const px = this.pointer.x * 0.9;
+    const py = this.pointer.y * 0.6;
+    const sh = this.tier === 'low' ? 0 : this.tier === 'high' ? 0.06 : 0.035;
+    const shakeX = sh * (Math.sin(t * 2.3) + 0.6 * Math.sin(t * 5.1));
+    const shakeY = sh * (Math.cos(t * 2.05) + 0.6 * Math.sin(t * 4.3));
+    const tx = this.camTargetPos.x + px + shakeX;
+    const ty = this.camTargetPos.y + py + shakeY;
+    const tz = this.camTargetPos.z - this.warpAmt * 3;
+    this.camera.position.x += (tx - this.camera.position.x) * 0.045;
+    this.camera.position.y += (ty - this.camera.position.y) * 0.045;
+    this.camera.position.z += (tz - this.camera.position.z) * 0.03;
+    if (Math.abs(this.camera.fov - this.camTargetFov) > 0.02) {
+      this.camera.fov += (this.camTargetFov - this.camera.fov) * 0.05;
+      this.camera.updateProjectionMatrix();
+    }
+    this.camera.lookAt(this.camLook);
 
     // 파티클 드리프트 + 워프(터널 가속 느낌)
     const warpZ = this.warpAmt * 26;

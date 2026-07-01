@@ -14,6 +14,7 @@ import {
   SMAAEffect,
   ToneMappingEffect,
   ToneMappingMode,
+  DepthOfFieldEffect,
   BlendFunction,
   KernelSize,
 } from 'postprocessing';
@@ -26,6 +27,8 @@ export interface Pipeline {
   composer: EffectComposer;
   grade: GradeEffect;
   bloom: BloomEffect;
+  dof: DepthOfFieldEffect | null;
+  setFocus(worldDist: number): void;
   setSize(w: number, h: number): void;
   render(dt: number): void;
   dispose(): void;
@@ -64,7 +67,18 @@ export function createPipeline(
           modulationOffset: 0.35,
         });
 
-  const list = [bloom, tonemap, grade, ...(chroma ? [chroma] : []), vignette, noise];
+  // 피사계심도(랙포커스) — 고/중 티어
+  const dof =
+    tier === 'low'
+      ? null
+      : new DepthOfFieldEffect(camera, {
+          worldFocusDistance: 12,
+          worldFocusRange: tier === 'high' ? 6 : 9,
+          bokehScale: tier === 'high' ? 3.2 : 2.2,
+          resolutionScale: tier === 'high' ? 0.75 : 0.5,
+        });
+
+  const list = [...(dof ? [dof] : []), bloom, tonemap, grade, ...(chroma ? [chroma] : []), vignette, noise];
   composer.addPass(new EffectPass(camera, ...list));
 
   if (tier !== 'low') {
@@ -75,6 +89,15 @@ export function createPipeline(
     composer,
     grade,
     bloom,
+    dof,
+    setFocus: (worldDist: number) => {
+      if (!dof) return;
+      try {
+        (dof.cocMaterial as unknown as { worldFocusDistance: number }).worldFocusDistance = worldDist;
+      } catch {
+        /* API 차이 시 정적 초점 유지 */
+      }
+    },
     setSize: (w, h) => composer.setSize(w, h),
     render: (dt) => {
       // grade.update는 컴포저가 매 프레임 자동 호출한다.

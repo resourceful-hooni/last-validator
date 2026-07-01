@@ -29,6 +29,13 @@ async function boot(): Promise<void> {
   document.body.appendChild(createTopBar());
   onMuteChange((m) => setMuted(m)); // 음소거 토글 → 오디오 마스터
 
+  // 시네마스코프 레터박스 바 (stage가 body.cinemascope 토글로 제어)
+  const barTop = document.createElement('div');
+  barTop.className = 'letterbar letterbar--top';
+  const barBottom = document.createElement('div');
+  barBottom.className = 'letterbar letterbar--bottom';
+  document.body.append(barTop, barBottom);
+
   const hud = new Hud();
   app.appendChild(hud.el);
 
