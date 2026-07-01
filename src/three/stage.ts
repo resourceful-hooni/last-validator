@@ -14,6 +14,7 @@ import type { Branch } from '../data/script';
 import { createBrainHero, type BrainHero } from './brainHero';
 import { createPipeline, type Pipeline } from './pipeline';
 import { detectTier, TIER_DPR, FpsMonitor, type Tier } from './quality';
+import { buildEnvironment, type Environment } from './environment';
 
 /** mood → 시네마틱 그레이드 룩 */
 const MOOD_LOOK: Record<Mood, string> = {
@@ -22,6 +23,15 @@ const MOOD_LOOK: Record<Mood, string> = {
   green: 'green',
   amber: 'amber',
   red: 'red',
+};
+
+/** mood → 림라이트 색 */
+const MOOD_RIM: Record<Mood, number> = {
+  cool: 0x3f78b0,
+  neutral: 0x3f78b0,
+  green: 0x34c77b,
+  amber: 0xe0a23a,
+  red: 0xe24a3d,
 };
 
 export type Mood = 'cool' | 'neutral' | 'green' | 'amber' | 'red';
@@ -70,6 +80,7 @@ class WebGLStage implements Stage {
   private pipeline!: Pipeline;
   private tier: Tier;
   private readonly fps: FpsMonitor;
+  private env!: Environment;
 
   constructor(renderer: THREE.WebGLRenderer) {
     this.renderer = renderer;
@@ -89,12 +100,8 @@ class WebGLStage implements Stage {
 
     this.buildParticles();
 
-    const amb = new THREE.AmbientLight(0xffffff, 0.6);
-    const key = new THREE.PointLight(0xffffff, 40, 60);
-    key.position.set(6, 8, 12);
-    this.scene.add(amb, key);
-
     this.tier = detectTier(this.renderer);
+    this.env = buildEnvironment(this.renderer, this.scene, this.tier); // IBL + 라이팅 + 반사 바닥
     this.pipeline = createPipeline(this.renderer, this.scene, this.camera, this.tier);
     this.fps = new FpsMonitor(() => this.degrade());
 
@@ -139,6 +146,7 @@ class WebGLStage implements Stage {
   setMood(mood: Mood): void {
     this.targetColor.setHex(MOOD_COLORS[mood]);
     this.pipeline.grade.setLook(MOOD_LOOK[mood], this.reduced);
+    this.env.setRim(MOOD_RIM[mood]);
     if (this.reduced) {
       this.baseColor.copy(this.targetColor);
       this.applyPointColor();
@@ -160,6 +168,7 @@ class WebGLStage implements Stage {
     const c = conf[kind];
     this.camTargetZ = c.z;
     this.fogTarget = c.fog;
+    this.env.showFloor(kind === 'er' || kind === 'ending'); // 반사 바닥은 히어로 장면에서
     if (this.reduced) {
       this.camera.position.z = c.z;
       this.fog.density = c.fog;
@@ -172,7 +181,7 @@ class WebGLStage implements Stage {
 
   showBrain(branch: Branch): void {
     this.clearHero();
-    this.hero = createBrainHero(branch);
+    this.hero = createBrainHero(branch, this.tier);
     this.heroGroup.add(this.hero.object);
     if (this.reduced) {
       this.hero.setProgress(1);
@@ -302,6 +311,7 @@ class WebGLStage implements Stage {
       if (Array.isArray(m)) m.forEach((x) => x.dispose());
       else if (m) (m as THREE.Material).dispose();
     });
+    this.env.dispose();
     this.pipeline.dispose();
     this.renderer.dispose();
     this.canvas.remove();
