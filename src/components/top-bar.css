@@ -8,7 +8,10 @@
   align-items: center;
   justify-content: flex-end;
   gap: 8px;
-  padding: max(10px, env(safe-area-inset-top)) clamp(12px, 4vw, 18px) 10px;
+  padding-top: max(10px, env(safe-area-inset-top));
+  padding-right: max(clamp(12px, 4vw, 18px), env(safe-area-inset-right));
+  padding-bottom: 10px;
+  padding-left: max(clamp(12px, 4vw, 18px), env(safe-area-inset-left));
   pointer-events: none;
 }
 

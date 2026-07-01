@@ -7,7 +7,11 @@
   width: 100%;
   max-width: var(--container-max);
   margin: 0 auto;
-  padding: 16px var(--pad-x) 40px;
+  /* 세이프에어리어(가로 노치·홈 인디케이터) 존중 */
+  padding-top: 16px;
+  padding-right: max(var(--pad-x), env(safe-area-inset-right));
+  padding-bottom: calc(40px + env(safe-area-inset-bottom));
+  padding-left: max(var(--pad-x), env(safe-area-inset-left));
 }
 
 /* 풀스크린(S0/S6/S7/S8/S12) — HUD 숨김, 수직 중앙 */

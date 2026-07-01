@@ -11,6 +11,8 @@
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  /* 노치·세이프에어리어까지 다크 배경 확장(어떤 여백도 흰색으로 안 보이게) */
+  background: var(--bg);
 }
 
 html,
@@ -83,7 +85,7 @@ body.cinemascope {
 }
 /* 콘텐츠가 바 뒤로 잘리지 않도록 안전 패딩 */
 body.cinemascope .scene {
-  padding-bottom: calc(40px + var(--letterbar-h));
+  padding-bottom: calc(40px + var(--letterbar-h) + env(safe-area-inset-bottom));
 }
 body.cinemascope .scene--fs {
   padding-top: calc(max(10px, env(safe-area-inset-top)) + 56px + var(--letterbar-h));

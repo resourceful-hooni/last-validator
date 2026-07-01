@@ -21,7 +21,7 @@
 .cutscene__skip {
   position: absolute;
   bottom: max(18px, env(safe-area-inset-bottom));
-  right: 18px;
+  right: max(18px, env(safe-area-inset-right));
   padding: 9px 16px;
   min-height: 40px;
   border-radius: 999px;

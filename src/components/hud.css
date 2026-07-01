@@ -2,8 +2,11 @@
   width: 100%;
   max-width: var(--container-max);
   margin: 0 auto;
-  padding: calc(max(10px, env(safe-area-inset-top)) + 40px) var(--pad-x) 0;
-  /* fixed TopBar(음소거/언어) 높이만큼 위 여백 확보 */
+  /* fixed TopBar(음소거/언어) 높이 + 노치 여백 확보 */
+  padding-top: calc(max(10px, env(safe-area-inset-top)) + 40px);
+  padding-right: max(var(--pad-x), env(safe-area-inset-right));
+  padding-left: max(var(--pad-x), env(safe-area-inset-left));
+  padding-bottom: 0;
 }
 
 .hud.is-hidden {
