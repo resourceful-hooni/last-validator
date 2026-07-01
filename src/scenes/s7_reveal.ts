@@ -22,8 +22,10 @@ export function createS7Reveal(): Scene {
     id: 's7',
     enter(container: HTMLElement, ctx: SceneContext) {
       ctx.hud.show(false);
-      container.classList.add('scene--fs', 'scene--center');
       const v = state.vCap;
+      ctx.stage?.setScene('reveal');
+      ctx.stage?.setMood(v > 70 ? 'green' : v > 40 ? 'amber' : 'red');
+      container.classList.add('scene--fs', 'scene--center');
 
       container.innerHTML = `
         <p class="scene__kicker">${renderPlain(t('s7.kicker'))}</p>

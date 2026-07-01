@@ -16,6 +16,7 @@ import { createDecisionScene } from './scenes/decision';
 import { DECISIONS } from './data/script';
 import { registerActTwoScenes } from './scenes';
 import { state as stateRef } from './engine/state';
+import type { Stage } from './three/stage';
 
 async function boot(): Promise<void> {
   const app = document.querySelector<HTMLDivElement>('#app');
@@ -38,7 +39,8 @@ async function boot(): Promise<void> {
   root.id = 'scene-root';
   app.appendChild(root);
 
-  const engine = new SceneEngine(root, { hud });
+  const shared: { hud: Hud; stage: Stage | null } = { hud, stage: null };
+  const engine = new SceneEngine(root, shared);
 
   // S0 + ACT1 결정 5개(데이터 주도)
   engine.register('s0', createS0Title);
@@ -49,6 +51,14 @@ async function boot(): Promise<void> {
   onLocaleChange(() => {
     void engine.rerenderCurrent();
   });
+
+  // 3D 배경 스테이지 초기화(동적 import → three는 별도 청크). 미지원 시 null(2D 유지).
+  try {
+    const { initStage } = await import('./three/stage');
+    shared.stage = await initStage();
+  } catch (e) {
+    console.warn('[main] stage init failed, 2D fallback', e);
+  }
 
   // 개발 전용 디버그 훅(빌드시 트리셰이킹). 검증/QA용.
   if (import.meta.env.DEV) {

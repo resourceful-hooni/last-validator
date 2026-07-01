@@ -18,6 +18,8 @@ export function createS6Settlement(): Scene {
     id: 's6',
     enter(container: HTMLElement, ctx: SceneContext) {
       ctx.hud.show(false);
+      ctx.stage?.setScene('reveal');
+      ctx.stage?.setMood('green'); // 거짓 성공의 초록
       container.classList.add('scene--fs', 'scene--center');
       board = new Scoreboard(state.eff);
 

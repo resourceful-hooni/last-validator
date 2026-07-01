@@ -22,6 +22,11 @@ export function createEnding(): Scene {
     enter(container: HTMLElement, ctx: SceneContext) {
       ctx.hud.show(false);
       const branch = state.endingBranch();
+      const moodMap = { tragedy: 'red', nearmiss: 'amber', averted: 'green' } as const;
+      ctx.stage?.setScene('ending');
+      ctx.stage?.clearHero();
+      ctx.stage?.warp(false);
+      ctx.stage?.setMood(moodMap[branch]);
       container.classList.add('scene--fs', 'ending');
       container.dataset.branch = branch;
 

@@ -21,6 +21,10 @@ export function createS0Title(): Scene {
     id: 's0',
     enter(container: HTMLElement, ctx: SceneContext) {
       ctx.hud.show(false);
+      ctx.stage?.setScene('title');
+      ctx.stage?.setMood('cool');
+      ctx.stage?.clearHero();
+      ctx.stage?.warp(false);
       container.classList.add('scene--center', 'scene--fs');
       container.innerHTML = `
         <p class="scene__kicker">${renderPlain(t('s0.kicker'))}</p>

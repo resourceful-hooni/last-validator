@@ -317,6 +317,15 @@
   margin-bottom: 10px;
 }
 
+/* 3D 모드: 2D 뇌 CT는 숨기고, 3D 히어로가 배경에서 보이도록 중앙 공간 확보.
+   골든타임 시계·구석 초록 대시보드는 오버레이로 유지. */
+.s9--webgl .s9-ct {
+  display: none;
+}
+.s9--webgl .s9-stage {
+  min-height: 34vh;
+}
+
 /* ── 엔딩(S10+S11+S12) ── */
 .scene.ending {
   justify-content: flex-start;

@@ -18,6 +18,9 @@ export function createS8Timejump(): Scene {
     id: 's8',
     enter(container: HTMLElement, ctx: SceneContext) {
       ctx.hud.show(false);
+      ctx.stage?.setScene('timejump');
+      ctx.stage?.setMood('cool');
+      ctx.stage?.warp(true); // 시간 가속 — 파티클 스트리크
       container.classList.add('scene--fs', 'scene--center', 's8');
       container.innerHTML = `
         <div class="s8-year"><span class="s8-year__n">2026</span></div>

@@ -7,10 +7,13 @@ import { gsap } from 'gsap';
 import { state } from './state';
 import type { Branch } from '../data/script';
 import type { Hud } from '../components/Hud';
+import type { Stage } from '../three/stage';
 
 /** 모든 씬에 공유되는 컨텍스트(앱 셸) */
 export interface SharedContext {
   hud: Hud;
+  /** WebGL 배경 스테이지. 미지원/폴백 시 null. */
+  stage: Stage | null;
 }
 
 export interface SceneContext extends SharedContext {

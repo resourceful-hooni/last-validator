@@ -29,6 +29,9 @@ export function createDecisionScene(d: DecisionScene, index: number): Scene {
       ctx.hud.setAct('ui.act1Badge');
       ctx.hud.setProgress(index + 1);
       ctx.hud.dashboard.syncInstant();
+      ctx.stage?.setScene('dash');
+      ctx.stage?.clearHero();
+      ctx.stage?.setMood(state.vbarKilled ? 'green' : state.greens.some(Boolean) ? 'green' : 'neutral');
 
       const already = state.picks[d.id];
 
@@ -61,6 +64,9 @@ export function createDecisionScene(d: DecisionScene, index: number): Scene {
         if (ctx.engine.isLocked) return;
         const choice = pick === 'A' ? d.a : d.b;
         state.applyChoice(d.id, pick, choice);
+
+        // 3D 배경 분위기: 효율=초록(거짓 성공)/보존=호박
+        ctx.stage?.setMood(choice.efficient ? 'green' : 'amber');
 
         // 대시보드 애니메이션
         const isS4Eff = d.id === 's4' && choice.efficient;

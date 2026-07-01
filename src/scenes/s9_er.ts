@@ -21,7 +21,15 @@ export function createS9Er(): Scene {
       const titleKey = `s9.${branch}.title`;
       const bodyKey = `s9.${branch}.body`;
 
+      const moodMap = { tragedy: 'red', nearmiss: 'amber', averted: 'green' } as const;
+      ctx.stage?.setScene('er');
+      ctx.stage?.warp(false);
+      ctx.stage?.setMood(moodMap[branch]);
+      const use3D = !!ctx.stage;
+      if (use3D) ctx.stage?.showBrain(branch);
+
       container.classList.add('scene--fs', 's9');
+      if (use3D) container.classList.add('s9--webgl');
       container.dataset.branch = branch;
 
       const paragraphs = t(bodyKey)

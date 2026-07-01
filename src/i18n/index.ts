@@ -51,11 +51,13 @@ export function detectLocale(): Locale {
   }
   if (isLocale(stored)) return stored;
 
-  const nav = (navigator.language || 'en').toLowerCase();
+  const nav = (navigator.language || 'ko').toLowerCase();
   if (nav.startsWith('ko')) return 'ko';
   if (nav.startsWith('zh')) return 'zh';
   if (nav.startsWith('ja')) return 'ja';
-  return 'en';
+  if (nav.startsWith('en')) return 'en';
+  // 그 외 모든 언어는 정본인 한국어로 (기본 한국어)
+  return 'ko';
 }
 
 async function loadLocale(loc: Locale): Promise<Dict> {
