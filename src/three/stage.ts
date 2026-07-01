@@ -12,6 +12,17 @@ import * as THREE from 'three';
 import { prefersReducedMotion } from '../engine/motion';
 import type { Branch } from '../data/script';
 import { createBrainHero, type BrainHero } from './brainHero';
+import { createPipeline, type Pipeline } from './pipeline';
+import { detectTier, TIER_DPR, FpsMonitor, type Tier } from './quality';
+
+/** mood → 시네마틱 그레이드 룩 */
+const MOOD_LOOK: Record<Mood, string> = {
+  cool: 'cool',
+  neutral: 'clinical',
+  green: 'green',
+  amber: 'amber',
+  red: 'red',
+};
 
 export type Mood = 'cool' | 'neutral' | 'green' | 'amber' | 'red';
 export type SceneKind = 'ambient' | 'title' | 'dash' | 'reveal' | 'timejump' | 'er' | 'ending';
@@ -56,10 +67,18 @@ class WebGLStage implements Stage {
   private targetWarp = 0;
   private pointer = new THREE.Vector2(0, 0);
   private readonly reduced = prefersReducedMotion();
+  private pipeline!: Pipeline;
+  private tier: Tier;
+  private readonly fps: FpsMonitor;
 
   constructor(renderer: THREE.WebGLRenderer) {
     this.renderer = renderer;
     this.canvas = renderer.domElement;
+
+    // 시네마틱 렌더러 설정: 톤매핑은 포스트(AgX)에서 처리, 소프트 섀도
+    this.renderer.toneMapping = THREE.NoToneMapping;
+    this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.type = THREE.VSMShadowMap;
 
     this.camera = new THREE.PerspectiveCamera(55, 1, 0.1, 100);
     this.camera.position.set(0, 0, 14);
@@ -74,6 +93,10 @@ class WebGLStage implements Stage {
     const key = new THREE.PointLight(0xffffff, 40, 60);
     key.position.set(6, 8, 12);
     this.scene.add(amb, key);
+
+    this.tier = detectTier(this.renderer);
+    this.pipeline = createPipeline(this.renderer, this.scene, this.camera, this.tier);
+    this.fps = new FpsMonitor(() => this.degrade());
 
     this.resize();
     window.addEventListener('resize', this.onResize);
@@ -115,6 +138,7 @@ class WebGLStage implements Stage {
 
   setMood(mood: Mood): void {
     this.targetColor.setHex(MOOD_COLORS[mood]);
+    this.pipeline.grade.setLook(MOOD_LOOK[mood], this.reduced);
     if (this.reduced) {
       this.baseColor.copy(this.targetColor);
       this.applyPointColor();
@@ -183,8 +207,10 @@ class WebGLStage implements Stage {
     this.clock.start();
     const tick = (): void => {
       if (!this.running) return;
-      this.update(this.clock.getDelta(), this.clock.elapsedTime);
-      this.renderer.render(this.scene, this.camera);
+      const dt = this.clock.getDelta();
+      this.update(dt, this.clock.elapsedTime);
+      this.pipeline.render(dt);
+      this.fps.tick(performance.now());
       this.raf = requestAnimationFrame(tick);
     };
     this.raf = requestAnimationFrame(tick);
@@ -226,16 +252,28 @@ class WebGLStage implements Stage {
 
   private renderOnce(): void {
     this.applyPointColor();
-    this.renderer.render(this.scene, this.camera);
+    this.pipeline.composer.render(0);
+  }
+
+  /** FPS 저하 시 티어 하향(포스트 재구성). high→mid→low 단방향. */
+  private degrade(): void {
+    if (this.tier === 'low') return;
+    this.tier = this.tier === 'high' ? 'mid' : 'low';
+    console.info('[stage] degrade →', this.tier);
+    this.pipeline.dispose();
+    this.pipeline = createPipeline(this.renderer, this.scene, this.camera, this.tier);
+    this.resize();
+    this.fps.reset();
   }
 
   private onResize = (): void => this.resize();
   resize(): void {
     const w = window.innerWidth;
     const h = window.innerHeight;
-    const dpr = Math.min(window.devicePixelRatio || 1, 1.8);
+    const dpr = Math.min(window.devicePixelRatio || 1, TIER_DPR[this.tier]);
     this.renderer.setPixelRatio(dpr);
     this.renderer.setSize(w, h, false);
+    this.pipeline.setSize(w, h);
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
     if (this.reduced || !this.running) this.renderOnce();
@@ -264,6 +302,7 @@ class WebGLStage implements Stage {
       if (Array.isArray(m)) m.forEach((x) => x.dispose());
       else if (m) (m as THREE.Material).dispose();
     });
+    this.pipeline.dispose();
     this.renderer.dispose();
     this.canvas.remove();
   }
@@ -274,7 +313,8 @@ export async function initStage(): Promise<Stage | null> {
   try {
     const canvas = document.createElement('canvas');
     canvas.className = 'stage-canvas';
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'low-power' });
+    // antialias는 SMAA(포스트)가 담당 → false. 최고화질 우선이므로 high-performance GPU 선호.
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: true, powerPreference: 'high-performance' });
     renderer.setClearColor(0x000000, 0);
     document.body.prepend(canvas);
     return new WebGLStage(renderer);

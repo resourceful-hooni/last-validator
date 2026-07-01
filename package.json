@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "gsap": "^3.12.5",
+    "postprocessing": "^6.39.2",
     "three": "^0.171.0"
   }
 }
