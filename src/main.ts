@@ -9,6 +9,8 @@ import { initI18n, onLocaleChange, injectAlternateLinks } from './i18n';
 import { createTopBar, onMuteChange } from './components/TopBar';
 import { setMuted } from './engine/audio';
 import { createPreloader } from './components/Preloader';
+import { playCutscene, cutsceneUrl } from './components/CutsceneVideo';
+import { prefersReducedMotion } from './engine/motion';
 import { Hud } from './components/Hud';
 import { SceneEngine } from './engine/SceneEngine';
 import { createS0Title } from './scenes/s0_title';
@@ -74,6 +76,25 @@ async function boot(): Promise<void> {
   }
 
   await pre.done();
+
+  // 인트로 시네마틱 컷신(자작 렌더 영상) — 세션 첫 진입·모션 허용 시 1회. 스킵 가능.
+  let introSeen = false;
+  try {
+    introSeen = sessionStorage.getItem('introSeen') === '1';
+  } catch {
+    /* private mode */
+  }
+  if (!prefersReducedMotion() && !introSeen) {
+    const intro = playCutscene(cutsceneUrl('intro'));
+    document.body.appendChild(intro.el);
+    await intro.done;
+    try {
+      sessionStorage.setItem('introSeen', '1');
+    } catch {
+      /* noop */
+    }
+  }
+
   await engine.next('s0');
 }
 

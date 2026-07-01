@@ -1,0 +1,46 @@
+.cutscene {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: #000;
+  opacity: 1;
+  transition: opacity 0.34s var(--ease-io);
+}
+
+.cutscene.is-leaving {
+  opacity: 0;
+}
+
+.cutscene__video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.cutscene__skip {
+  position: absolute;
+  bottom: max(18px, env(safe-area-inset-bottom));
+  right: 18px;
+  padding: 9px 16px;
+  min-height: 40px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--mut);
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg-strong);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-shadow), inset 0 1px 0 var(--glass-hi);
+  transition: color var(--dur-micro) var(--ease-in);
+}
+.cutscene__skip:hover {
+  color: var(--txt);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cutscene {
+    transition: none;
+  }
+}
