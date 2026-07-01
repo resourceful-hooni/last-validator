@@ -61,10 +61,10 @@ export function playCutscene(src: string): { el: HTMLElement; done: Promise<Cuts
     /* 제스처 필요 시 사용자가 스킵 가능 */
   });
 
-  // 안전망: 일정 시간 내 로드 실패 → error(라이브 폴백)
+  // 안전망: 로드 실패 또는 자동재생 차단(로드됐지만 재생 안 됨) → error(폴백/진행)
   const guard = window.setTimeout(() => {
-    if (!done && video.readyState < 2) finish('error');
-  }, 4000);
+    if (!done && (video.readyState < 2 || (video.paused && video.currentTime === 0))) finish('error');
+  }, 2500);
 
   return { el, done: promise };
 }
