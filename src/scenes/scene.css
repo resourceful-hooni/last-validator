@@ -426,14 +426,40 @@
   margin-bottom: 10px;
 }
 .anchor__list {
-  list-style: none;
+  display: flex;
+  flex-direction: column;
 }
 .anchor__row {
-  padding: 10px 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 11px 0;
   font-size: var(--fs-caption);
   line-height: 1.55;
   color: var(--txt);
+  text-decoration: none;
   border-top: 1px solid var(--anchor-line);
+  transition: color var(--dur-micro) var(--ease-in);
+  min-height: 44px;
+}
+.anchor__row:hover,
+.anchor__row:focus-visible {
+  color: var(--red);
+}
+.anchor__ext {
+  flex-shrink: 0;
+  color: var(--red);
+  opacity: 0.5;
+  font-size: 13px;
+  transition:
+    opacity var(--dur-micro) var(--ease-in),
+    transform var(--dur-micro) var(--ease-in);
+}
+.anchor__row:hover .anchor__ext,
+.anchor__row:focus-visible .anchor__ext {
+  opacity: 1;
+  transform: translateX(2px);
 }
 
 /* 명제 */

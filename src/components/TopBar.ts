@@ -7,8 +7,8 @@ import { t, onLocaleChange } from '../i18n';
 import { createLangSwitcher } from './LangSwitcher';
 import './top-bar.css';
 
-/** 전역 음소거 상태 (기본 ON = 음소거). audio.ts가 구독한다. */
-let muted = true;
+/** 전역 음소거 상태 (기본 재생 = false). audio.ts가 구독한다. */
+let muted = false;
 const muteListeners = new Set<(m: boolean) => void>();
 let syncUI: (() => void) | null = null;
 export const isMuted = (): boolean => muted;
@@ -52,8 +52,6 @@ export function createTopBar(): HTMLElement {
   onLocaleChange(syncMute);
   syncUI = syncMute;
   syncMute();
-  // 소리 사용 가능 힌트(첫 진입 몇 회 펄스)
-  muteBtn.classList.add('is-hint');
 
   bar.appendChild(createLangSwitcher());
   bar.appendChild(muteBtn);

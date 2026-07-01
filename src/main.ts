@@ -32,6 +32,17 @@ async function boot(): Promise<void> {
   document.body.appendChild(createTopBar());
   onMuteChange((m) => setMuted(m)); // 음소거 토글 → 오디오 마스터
 
+  // 소리 기본 재생: 자동재생 정책상 첫 사용자 제스처에 오디오 컨텍스트 활성(어떤 터치/클릭/키든).
+  const startAudioOnce = (): void => {
+    activateAudio();
+    window.removeEventListener('pointerdown', startAudioOnce);
+    window.removeEventListener('keydown', startAudioOnce);
+    window.removeEventListener('touchstart', startAudioOnce);
+  };
+  window.addEventListener('pointerdown', startAudioOnce);
+  window.addEventListener('keydown', startAudioOnce);
+  window.addEventListener('touchstart', startAudioOnce);
+
   // 시네마스코프 레터박스 바 (stage가 body.cinemascope 토글로 제어)
   const barTop = document.createElement('div');
   barTop.className = 'letterbar letterbar--top';

@@ -10,7 +10,7 @@ let master: GainNode | null = null;
 let humGain: GainNode | null = null;
 let humNodes: OscillatorNode[] = [];
 let enabled = false; // 사용자 제스처로 활성화됐는가
-let muted = true; // 기본 음소거
+let muted = false; // 기본 재생(첫 제스처에 컨텍스트 resume). 음소거 토글로 끌 수 있음.
 
 const MASTER_LEVEL = 0.75;
 
