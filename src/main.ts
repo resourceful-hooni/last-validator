@@ -77,21 +77,10 @@ async function boot(): Promise<void> {
 
   await pre.done();
 
-  // 인트로 시네마틱 컷신(자작 렌더 영상) — 세션 첫 진입·모션 허용 시 1회. 스킵 가능.
-  let introSeen = false;
-  try {
-    introSeen = sessionStorage.getItem('introSeen') === '1';
-  } catch {
-    /* private mode */
-  }
-  if (!prefersReducedMotion() && !introSeen) {
+  // 인트로 시네마틱 컷신(자작 렌더 영상) — 진입 시 재생(스킵 가능). reduced-motion 시 생략.
+  if (!prefersReducedMotion()) {
     const intro = playCutscene(cutsceneUrl('intro')); // body에 자동 부착
     await intro.done;
-    try {
-      sessionStorage.setItem('introSeen', '1');
-    } catch {
-      /* noop */
-    }
   }
 
   await engine.next('s0');

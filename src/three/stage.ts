@@ -195,8 +195,8 @@ class WebGLStage implements Stage {
     const cinemascope = kind === 'timejump' || kind === 'er';
     document.body.classList.toggle('cinemascope', cinemascope);
     this.env.showFloor(kind === 'er' || kind === 'ending');
-    // god rays(빛기둥)는 응급실·시간점프에서
-    this.sunVisible = kind === 'er' || kind === 'timejump';
+    // god rays(빛기둥)는 응급실에서만 (S8은 라이브 워프라 태양 오브 숨김)
+    this.sunVisible = kind === 'er';
     this.env.setSun(this.sunColor, this.sunVisible);
 
     // 초점: er은 랙포커스(안개→뇌로 초점 이동), 그 외 정적
