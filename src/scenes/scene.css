@@ -89,12 +89,15 @@
   width: 100%;
   text-align: left;
   padding: 14px 16px;
-  border: 1px solid var(--line);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius);
-  background: linear-gradient(180deg, var(--surf), var(--bg2));
+  background: var(--glass-bg-strong);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   transition:
     border-color var(--dur-micro) var(--ease-in),
-    transform var(--dur-micro) var(--ease-in);
+    transform var(--dur-micro) var(--ease-in),
+    background var(--dur-micro) var(--ease-in);
 }
 
 .choice:hover {
@@ -205,9 +208,11 @@
 }
 .sb__cell {
   padding: 16px 14px;
-  border: 1px solid var(--line);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius);
-  background: linear-gradient(180deg, var(--surf), var(--bg2));
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -357,7 +362,9 @@
   align-items: start;
   padding: 10px 12px;
   border-left: 3px solid var(--red);
-  background: var(--surf);
+  background: var(--glass-bg-strong);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   border-radius: 0 8px 8px 0;
 }
 .trace-row__yr {
@@ -384,7 +391,9 @@
 
 /* 앵커 카드 */
 .anchor {
-  background: var(--anchor-bg);
+  background: color-mix(in srgb, var(--anchor-bg) 74%, transparent);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   border: 1px solid var(--anchor-line);
   border-radius: var(--radius);
   padding: 14px 16px;

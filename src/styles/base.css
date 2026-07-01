@@ -58,12 +58,18 @@ body::before {
   display: block;
 }
 
-/* 시네마스코프 레터박스 바 (ACT2에서 2.39:1 필름 프레이밍) */
+/* 시네마스코프 레터박스 바 (단일 화면 컷: S8/S9) */
+:root {
+  --letterbar-h: 0px;
+}
+body.cinemascope {
+  --letterbar-h: clamp(26px, 7.5vh, 84px);
+}
 .letterbar {
   position: fixed;
   left: 0;
   right: 0;
-  height: 0;
+  height: var(--letterbar-h);
   background: #000;
   z-index: 90;
   pointer-events: none;
@@ -75,8 +81,12 @@ body::before {
 .letterbar--bottom {
   bottom: 0;
 }
-body.cinemascope .letterbar {
-  height: clamp(26px, 7.5vh, 84px);
+/* 콘텐츠가 바 뒤로 잘리지 않도록 안전 패딩 */
+body.cinemascope .scene {
+  padding-bottom: calc(40px + var(--letterbar-h));
+}
+body.cinemascope .scene--fs {
+  padding-top: calc(max(10px, env(safe-area-inset-top)) + 56px + var(--letterbar-h));
 }
 @media (prefers-reduced-motion: reduce) {
   .letterbar {

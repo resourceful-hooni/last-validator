@@ -1,7 +1,9 @@
 .dashboard {
-  border: 1px solid var(--line);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius);
-  background: linear-gradient(180deg, var(--surf), var(--bg2));
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   padding: 12px 14px 14px;
   transition: box-shadow 0.4s var(--ease-io);
 }
@@ -37,8 +39,8 @@
   gap: 4px;
   padding: 9px 10px;
   border-radius: 9px;
-  border: 1px solid var(--line);
-  background: var(--surf2);
+  border: 1px solid var(--glass-border);
+  background: color-mix(in srgb, var(--surf2) 55%, transparent);
   transition:
     border-color 0.4s var(--ease-io),
     box-shadow 0.4s var(--ease-io);

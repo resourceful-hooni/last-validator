@@ -41,6 +41,12 @@
   --pad-x: clamp(14px, 4vw, 16px);
   --radius: 12px;
 
+  /* ── 글래스(반투명 패널 · 시네마틱 3D 위에 얹힘) ── */
+  --glass-bg: color-mix(in srgb, var(--surf) 60%, transparent);
+  --glass-bg-strong: color-mix(in srgb, var(--surf) 72%, transparent);
+  --glass-border: color-mix(in srgb, var(--txt) 12%, transparent);
+  --glass-blur: blur(14px) saturate(1.15);
+
   /* ── 모션 (§3) ── */
   --ease-in: cubic-bezier(0.22, 1, 0.36, 1); /* power2.out 근사 */
   --ease-io: cubic-bezier(0.65, 0, 0.35, 1); /* power2.inOut 근사 */

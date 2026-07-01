@@ -182,7 +182,8 @@ class WebGLStage implements Stage {
     this.camTargetFov = c.fov;
     this.fogTarget = c.fog;
 
-    const cinemascope = kind === 'timejump' || kind === 'er' || kind === 'ending';
+    // 레터박스는 단일 화면 시네마틱 컷에만(스크롤 엔딩은 텍스트 잘림 방지 위해 제외)
+    const cinemascope = kind === 'timejump' || kind === 'er';
     document.body.classList.toggle('cinemascope', cinemascope);
     this.env.showFloor(kind === 'er' || kind === 'ending');
 
