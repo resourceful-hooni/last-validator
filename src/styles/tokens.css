@@ -41,11 +41,13 @@
   --pad-x: clamp(14px, 4vw, 16px);
   --radius: 12px;
 
-  /* ── 글래스(반투명 패널 · 시네마틱 3D 위에 얹힘) ── */
-  --glass-bg: color-mix(in srgb, var(--surf) 60%, transparent);
-  --glass-bg-strong: color-mix(in srgb, var(--surf) 72%, transparent);
-  --glass-border: color-mix(in srgb, var(--txt) 12%, transparent);
-  --glass-blur: blur(14px) saturate(1.15);
+  /* ── 글래스 디자인 시스템(통일) · 시네마틱 3D 위에 얹힘 ── */
+  --glass-bg: color-mix(in srgb, var(--surf) 52%, transparent);
+  --glass-bg-strong: color-mix(in srgb, var(--surf) 66%, transparent);
+  --glass-border: color-mix(in srgb, var(--txt) 14%, transparent);
+  --glass-hi: color-mix(in srgb, #ffffff 7%, transparent); /* 상단 하이라이트 */
+  --glass-blur: blur(16px) saturate(1.2);
+  --glass-shadow: 0 10px 34px -14px rgba(0, 0, 0, 0.55);
 
   /* ── 모션 (§3) ── */
   --ease-in: cubic-bezier(0.22, 1, 0.36, 1); /* power2.out 근사 */

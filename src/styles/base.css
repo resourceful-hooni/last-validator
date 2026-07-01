@@ -112,6 +112,36 @@ body.cinemascope .scene--fs {
   padding: 0 var(--pad-x);
 }
 
+/* ── 통일 글래스 패널 레시피 ── */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  box-shadow: var(--glass-shadow), inset 0 1px 0 var(--glass-hi);
+}
+
+/* ── 씬이 영상 컷처럼 '도착'하는 시네마틱 enter ── */
+.scene {
+  animation: scene-in 0.62s var(--ease-io) both;
+}
+@keyframes scene-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(1.012);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scene {
+    animation: none;
+  }
+}
+
 /* 버튼/인터랙티브 기본 (터치 타깃 ≥44px) */
 button {
   font-family: inherit;

@@ -4,12 +4,13 @@
   background: var(--glass-bg);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-shadow), inset 0 1px 0 var(--glass-hi);
   padding: 12px 14px 14px;
   transition: box-shadow 0.4s var(--ease-io);
 }
 
 .dashboard.is-flash {
-  box-shadow: 0 0 0 1px var(--green-glow), 0 0 60px var(--green-glow);
+  box-shadow: 0 0 0 1px var(--green-glow), 0 0 60px var(--green-glow), inset 0 1px 0 var(--glass-hi);
 }
 
 .dashboard__title {
@@ -40,7 +41,10 @@
   padding: 9px 10px;
   border-radius: 9px;
   border: 1px solid var(--glass-border);
-  background: color-mix(in srgb, var(--surf2) 55%, transparent);
+  background: color-mix(in srgb, var(--surf2) 48%, transparent);
+  backdrop-filter: blur(8px) saturate(1.15);
+  -webkit-backdrop-filter: blur(8px) saturate(1.15);
+  box-shadow: inset 0 1px 0 var(--glass-hi);
   transition:
     border-color 0.4s var(--ease-io),
     box-shadow 0.4s var(--ease-io);
@@ -61,7 +65,7 @@
 
 .kpi-chip[data-status='green'] {
   border-color: var(--green);
-  box-shadow: 0 0 0 1px var(--green-glow), 0 0 18px -4px var(--green-glow);
+  box-shadow: 0 0 0 1px var(--green-glow), 0 0 18px -4px var(--green-glow), inset 0 1px 0 var(--glass-hi);
 }
 .kpi-chip[data-status='green'] .kpi-chip__value {
   color: var(--green);
