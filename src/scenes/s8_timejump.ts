@@ -8,13 +8,14 @@ import { t } from '../i18n';
 import { renderPlain } from '../i18n/richText';
 import { countTo, fadeUp, prefersReducedMotion } from '../engine/motion';
 import { audio } from '../engine/audio';
-import { playCutscene, cutsceneUrl } from '../components/CutsceneVideo';
+import { playCutscene, cutsceneUrl, type CutsceneHandle } from '../components/CutsceneVideo';
 import { gsap } from 'gsap';
 import './scene.css';
 
 export function createS8Timejump(): Scene {
   let advanced = false;
   let timer: number | undefined;
+  let cut: CutsceneHandle | null = null;
 
   return {
     id: 's8',
@@ -66,10 +67,10 @@ export function createS8Timejump(): Scene {
         return;
       }
 
-      // 컷신 영상 재생 → 끝/스킵이면 S9, 로드 실패면 라이브 폴백
-      const scene = playCutscene(cutsceneUrl('timejump'));
-      container.appendChild(scene.el);
-      void scene.done.then((r) => {
+      // 컷신 영상 재생(body 부착) → 끝/스킵이면 S9, 로드 실패면 라이브 폴백
+      cut = playCutscene(cutsceneUrl('timejump'));
+      void cut.done.then((r) => {
+        cut = null;
         if (advanced) return;
         if (r === 'error') runLive();
         else advance();
@@ -77,6 +78,8 @@ export function createS8Timejump(): Scene {
     },
     exit() {
       if (timer) window.clearTimeout(timer);
+      cut?.dispose();
+      cut = null;
     },
   };
 }

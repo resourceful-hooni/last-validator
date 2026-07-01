@@ -10,6 +10,9 @@ import { fadeUp } from '../engine/motion';
 import { state } from '../engine/state';
 import { createBrainCT } from '../components/BrainCT';
 import { createGoldenClock } from '../components/GoldenClock';
+import { playCutscene, cutsceneUrl } from '../components/CutsceneVideo';
+import { prefersReducedMotion } from '../engine/motion';
+import { audio } from '../engine/audio';
 import './scene.css';
 
 export function createS9Er(): Scene {
@@ -56,8 +59,18 @@ export function createS9Er(): Scene {
       container.querySelector('.s9-ct')!.appendChild(ct.el);
       container.querySelector('.s9-clock')!.appendChild(clock.el);
 
+      // 왜 이렇게 됐는지 → 명제 finale 컷신(자작 영상) → 인터랙티브 엔딩(S10)
       container.querySelector('[data-next]')?.addEventListener('click', () => {
-        void ctx.engine.next('s10');
+        if (ctx.engine.isLocked) return;
+        if (prefersReducedMotion()) {
+          void ctx.engine.next('s10');
+          return;
+        }
+        const btn = container.querySelector<HTMLButtonElement>('[data-next]');
+        if (btn) btn.disabled = true;
+        audio.impact(); // 명제 저음 임팩트
+        const cut = playCutscene(cutsceneUrl('finale'));
+        void cut.done.then(() => ctx.engine.next('s10')); // 끝/스킵/에러 모두 엔딩으로
       });
 
       ctx.gsapCtx.add(() => {

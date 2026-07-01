@@ -14,7 +14,14 @@ export function cutsceneUrl(name: string): string {
   return `${import.meta.env.BASE_URL}video/${name}.mp4`;
 }
 
-export function playCutscene(src: string): { el: HTMLElement; done: Promise<CutsceneResult> } {
+export interface CutsceneHandle {
+  el: HTMLElement;
+  done: Promise<CutsceneResult>;
+  /** 즉시 정리(씬 이탈 등) */
+  dispose(): void;
+}
+
+export function playCutscene(src: string): CutsceneHandle {
   const el = document.createElement('div');
   el.className = 'cutscene';
 
@@ -33,6 +40,8 @@ export function playCutscene(src: string): { el: HTMLElement; done: Promise<Cuts
   skip.textContent = t('ui.skip');
 
   el.append(video, skip);
+  // 항상 body에 부착 — 씬 컨테이너의 transform(등장 애니메이션)에 fixed가 깨지지 않도록.
+  document.body.appendChild(el);
 
   let done = false;
   let resolveFn!: (r: CutsceneResult) => void;
@@ -66,5 +75,9 @@ export function playCutscene(src: string): { el: HTMLElement; done: Promise<Cuts
     if (!done && (video.readyState < 2 || (video.paused && video.currentTime === 0))) finish('error');
   }, 2500);
 
-  return { el, done: promise };
+  return {
+    el,
+    done: promise,
+    dispose: () => finish('skipped'),
+  };
 }

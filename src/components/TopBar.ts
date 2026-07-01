@@ -7,13 +7,22 @@ import { t, onLocaleChange } from '../i18n';
 import { createLangSwitcher } from './LangSwitcher';
 import './top-bar.css';
 
-/** 전역 음소거 상태 (기본 ON = 음소거). Phase 7 audio.ts가 구독한다. */
+/** 전역 음소거 상태 (기본 ON = 음소거). audio.ts가 구독한다. */
 let muted = true;
 const muteListeners = new Set<(m: boolean) => void>();
+let syncUI: (() => void) | null = null;
 export const isMuted = (): boolean => muted;
 export function onMuteChange(cb: (m: boolean) => void): () => void {
   muteListeners.add(cb);
   return () => muteListeners.delete(cb);
+}
+
+/** 프로그램적으로 음소거 상태 설정(예: 시작 제스처 후 소리 켜기). 버튼 UI·구독자 동기화. */
+export function setMute(m: boolean): void {
+  if (muted === m) return;
+  muted = m;
+  syncUI?.();
+  muteListeners.forEach((cb) => cb(muted));
 }
 
 const ICON_MUTED = `<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><line x1="17" y1="9" x2="22" y2="14"/><line x1="22" y1="9" x2="17" y2="14"/></svg>`;
@@ -38,9 +47,13 @@ export function createTopBar(): HTMLElement {
     muted = !muted;
     syncMute();
     muteListeners.forEach((cb) => cb(muted));
+    muteBtn.classList.remove('is-hint');
   });
   onLocaleChange(syncMute);
+  syncUI = syncMute;
   syncMute();
+  // 소리 사용 가능 힌트(첫 진입 몇 회 펄스)
+  muteBtn.classList.add('is-hint');
 
   bar.appendChild(createLangSwitcher());
   bar.appendChild(muteBtn);

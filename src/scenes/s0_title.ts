@@ -6,6 +6,7 @@ import { t } from '../i18n';
 import { renderRich, renderPlain } from '../i18n/richText';
 import { fadeUp, staggerIn, prefersReducedMotion } from '../engine/motion';
 import { activateAudio } from '../engine/audio';
+import { setMute } from '../components/TopBar';
 import { gsap } from 'gsap';
 import './scene.css';
 
@@ -37,7 +38,8 @@ export function createS0Title(): Scene {
       `;
 
       container.querySelector<HTMLButtonElement>('[data-start]')?.addEventListener('click', () => {
-        activateAudio(); // 첫 사용자 제스처 — 오디오 컨텍스트 활성(기본 음소거 유지)
+        activateAudio(); // 첫 사용자 제스처 — 오디오 컨텍스트 활성
+        setMute(false); // 시작(제스처) 시 소리 켜기. 로드 시엔 음소거 유지(자동재생 정책·규칙 준수)
         void ctx.engine.next('s1');
       });
 

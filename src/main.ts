@@ -85,8 +85,7 @@ async function boot(): Promise<void> {
     /* private mode */
   }
   if (!prefersReducedMotion() && !introSeen) {
-    const intro = playCutscene(cutsceneUrl('intro'));
-    document.body.appendChild(intro.el);
+    const intro = playCutscene(cutsceneUrl('intro')); // body에 자동 부착
     await intro.done;
     try {
       sessionStorage.setItem('introSeen', '1');
