@@ -123,8 +123,12 @@ class WebGLStage implements Stage {
 
     this.tier = detectTier(this.renderer);
     this.env = buildEnvironment(this.renderer, this.scene, this.tier); // IBL + 라이팅 + 반사 바닥
-    this.pipeline = createPipeline(this.renderer, this.scene, this.camera, this.tier);
-    this.fps = new FpsMonitor(() => this.degrade());
+    this.pipeline = createPipeline(this.renderer, this.scene, this.camera, this.tier, this.env.lightSource);
+    // ?nodegrade: FPS 자동 강등 비활성(최고화질 강제 보기/튜닝용)
+    const noDegrade = new URLSearchParams(location.search).has('nodegrade');
+    this.fps = new FpsMonitor(() => {
+      if (!noDegrade) this.degrade();
+    });
 
     this.resize();
     window.addEventListener('resize', this.onResize);
@@ -164,10 +168,15 @@ class WebGLStage implements Stage {
     this.scene.add(this.points, this.pointsFar);
   }
 
+  private sunVisible = false;
+  private sunColor = 0x8fb0d0;
+
   setMood(mood: Mood): void {
     this.targetColor.setHex(MOOD_COLORS[mood]);
     this.pipeline.grade.setLook(MOOD_LOOK[mood], this.reduced);
     this.env.setRim(MOOD_RIM[mood]);
+    // 태양(god ray 광원)은 차가운 백색 유지 → 그레이드가 씬별로 색을 입힌다.
+    this.env.setSun(this.sunColor, this.sunVisible);
     if (this.reduced) {
       this.baseColor.copy(this.targetColor);
       this.applyPointColor();
@@ -186,6 +195,9 @@ class WebGLStage implements Stage {
     const cinemascope = kind === 'timejump' || kind === 'er';
     document.body.classList.toggle('cinemascope', cinemascope);
     this.env.showFloor(kind === 'er' || kind === 'ending');
+    // god rays(빛기둥)는 응급실·시간점프에서
+    this.sunVisible = kind === 'er' || kind === 'timejump';
+    this.env.setSun(this.sunColor, this.sunVisible);
 
     // 초점: er은 랙포커스(안개→뇌로 초점 이동), 그 외 정적
     if (kind === 'er' && !this.reduced) {
@@ -316,7 +328,7 @@ class WebGLStage implements Stage {
     this.tier = this.tier === 'high' ? 'mid' : 'low';
     console.info('[stage] degrade →', this.tier);
     this.pipeline.dispose();
-    this.pipeline = createPipeline(this.renderer, this.scene, this.camera, this.tier);
+    this.pipeline = createPipeline(this.renderer, this.scene, this.camera, this.tier, this.env.lightSource);
     // high에서 내려오면 볼류메트릭 뇌 → 가벼운 메시 뇌로 교체
     if (wasHigh && this.heroBranch) this.showBrain(this.heroBranch);
     this.resize();

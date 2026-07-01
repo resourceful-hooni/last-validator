@@ -11,6 +11,9 @@ import type { Tier } from './quality';
 export interface Environment {
   setRim(hex: number): void;
   showFloor(on: boolean): void;
+  /** god rays 광원 메시(빛기둥 소스) */
+  readonly lightSource: THREE.Mesh;
+  setSun(hex: number, visible: boolean): void;
   dispose(): void;
 }
 
@@ -37,6 +40,14 @@ export function buildEnvironment(renderer: THREE.WebGLRenderer, scene: THREE.Sce
   fill.position.set(-2, -4, 6);
 
   scene.add(hemi, key, rim, fill);
+
+  // ── god rays 광원(발광 디스크, 뇌 뒤 상단) ──
+  const sunGeo = new THREE.SphereGeometry(0.9, 24, 24);
+  const sunMat = new THREE.MeshBasicMaterial({ color: 0xbcd0e0, transparent: true, opacity: 0.95, fog: false });
+  const sun = new THREE.Mesh(sunGeo, sunMat);
+  sun.position.set(-2.2, 8.5, -12);
+  sun.visible = false;
+  scene.add(sun);
 
   // ── 반사 바닥(er/ending에서 표시) ──
   const floorGeo = new THREE.PlaneGeometry(160, 160);
@@ -69,8 +80,13 @@ export function buildEnvironment(renderer: THREE.WebGLRenderer, scene: THREE.Sce
   scene.add(gloss);
 
   return {
+    lightSource: sun,
     setRim(hex: number): void {
       rim.color.setHex(hex);
+    },
+    setSun(hex: number, visible: boolean): void {
+      sunMat.color.setHex(hex);
+      sun.visible = visible;
     },
     showFloor(on: boolean): void {
       floor.visible = on;
@@ -82,6 +98,8 @@ export function buildEnvironment(renderer: THREE.WebGLRenderer, scene: THREE.Sce
       (floor.material as THREE.Material).dispose();
       floor.dispose?.();
       (gloss.material as THREE.Material).dispose();
+      sunGeo.dispose();
+      sunMat.dispose();
     },
   };
 }

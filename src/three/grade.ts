@@ -47,7 +47,7 @@ export const LOOKS: Record<string, Look> = {
   amber: { slope: [1.09, 1.0, 0.88], offset: [0.02, 0.0, -0.02], power: [0.98, 1.0, 1.05], sat: 0.96, temp: 0.03, lift: 0.02 },
   red: { slope: [1.2, 0.83, 0.85], offset: [0.03, -0.014, -0.01], power: [0.95, 1.03, 1.03], sat: 0.98, temp: 0.022, lift: 0.016 },
   reveal: { slope: [1.0, 1.0, 1.02], offset: [0.0, 0.0, 0.0], power: [1.08, 1.05, 1.02], sat: 0.82, temp: -0.01, lift: 0.0 },
-  cool: { slope: [0.92, 0.99, 1.12], offset: [-0.015, 0.0, 0.03], power: [1.08, 1.0, 0.95], sat: 0.88, temp: -0.035, lift: 0.02 },
+  cool: { slope: [0.84, 0.98, 1.16], offset: [-0.028, 0.0, 0.032], power: [1.1, 1.02, 0.94], sat: 0.8, temp: -0.045, lift: 0.016 },
 };
 
 const lerp = (a: number, b: number, t: number): number => a + (b - a) * t;

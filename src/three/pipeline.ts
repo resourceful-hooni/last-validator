@@ -15,6 +15,7 @@ import {
   ToneMappingEffect,
   ToneMappingMode,
   DepthOfFieldEffect,
+  GodRaysEffect,
   BlendFunction,
   KernelSize,
 } from 'postprocessing';
@@ -39,9 +40,25 @@ export function createPipeline(
   scene: THREE.Scene,
   camera: THREE.Camera,
   tier: Tier,
+  lightSource?: THREE.Mesh,
 ): Pipeline {
   const composer = new EffectComposer(renderer, { frameBufferType: HalfFloatType });
   composer.addPass(new RenderPass(scene, camera));
+
+  // god rays(빛기둥) — high 티어 + 광원 있을 때
+  const godrays =
+    tier === 'high' && lightSource
+      ? new GodRaysEffect(camera as THREE.PerspectiveCamera, lightSource, {
+          resolutionScale: 0.5,
+          density: 0.86,
+          decay: 0.9,
+          weight: 0.32,
+          exposure: 0.3,
+          samples: 60,
+          clampMax: 0.9,
+          blur: true,
+        })
+      : null;
 
   const bloom = new BloomEffect({
     intensity: tier === 'high' ? 1.05 : 0.85,
@@ -78,7 +95,16 @@ export function createPipeline(
           resolutionScale: tier === 'high' ? 0.75 : 0.5,
         });
 
-  const list = [...(dof ? [dof] : []), bloom, tonemap, grade, ...(chroma ? [chroma] : []), vignette, noise];
+  const list = [
+    ...(godrays ? [godrays] : []),
+    ...(dof ? [dof] : []),
+    bloom,
+    tonemap,
+    grade,
+    ...(chroma ? [chroma] : []),
+    vignette,
+    noise,
+  ];
   composer.addPass(new EffectPass(camera, ...list));
 
   if (tier !== 'low') {
