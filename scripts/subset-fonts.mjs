@@ -39,8 +39,24 @@ const COMMON = ASCII + UI_SYMBOLS;
 // 중복 제거 + 제어문자(\n\r\t 등, 글리프 없음) 제외
 const uniq = (s) => [...new Set([...s])].filter((c) => c.codePointAt(0) >= 0x20).join('');
 
+// public/proposal.html(자작 제안서) 가시 텍스트도 서브셋에 포함. Han·Kana는 noto가 담당 → Pretendard에선 제외.
+let proposalHtml = '';
+try {
+  proposalHtml = readFileSync(resolve(root, 'public/proposal.html'), 'utf8');
+} catch {
+  /* 없으면 스킵 */
+}
+const proposalText = proposalHtml.replace(/<(script|style)[\s\S]*?<\/\1>/gi, ' ').replace(/<[^>]+>/g, ' ');
+const koLatin = (s) =>
+  [...s]
+    .filter((c) => {
+      const cp = c.codePointAt(0);
+      return !((cp >= 0x3040 && cp <= 0x30ff) || (cp >= 0x4e00 && cp <= 0x9fff));
+    })
+    .join('');
+
 const FONTS = [
-  { src: 'PretendardVariable.ttf', out: 'pretendard-subset.woff2', text: ko + en + COMMON, name: 'Pretendard (ko+en)' },
+  { src: 'PretendardVariable.ttf', out: 'pretendard-subset.woff2', text: ko + en + koLatin(proposalText) + COMMON, name: 'Pretendard (ko+en+제안서)' },
   { src: 'NotoSansSC.ttf', out: 'noto-sc-subset.woff2', text: zh + COMMON, name: 'Noto Sans SC (zh)' },
   { src: 'NotoSansJP.ttf', out: 'noto-jp-subset.woff2', text: ja + COMMON, name: 'Noto Sans JP (ja)' },
 ];

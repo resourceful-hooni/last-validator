@@ -46,8 +46,8 @@ export const KPI_LABEL_KEYS = [
 export const scoreEfficiency = (eff: number): number => 20 + eff * 16;
 export const scoreCost = (eff: number): number => 8 + eff * 5;
 
-/** 제출 직전 실제 제안서/노션 링크로 교체. 빈 문자열이면 CTA 버튼 숨김. */
-export const PROPOSAL_URL = '';
+/** 엔딩 CTA가 여는 1페이지 제안서(자작 웹페이지 `public/proposal.html`). 빈 문자열이면 버튼 숨김. */
+export const PROPOSAL_URL = `${import.meta.env.BASE_URL}proposal.html`;
 
 /** 결정→KPI 매핑: 처리량=S1, 비용=S2, 일치율=S3, 잔여(환자대기)=S4·S5 (STORYBOARD §분기로직) */
 function decision(
