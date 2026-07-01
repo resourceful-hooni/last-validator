@@ -5,6 +5,7 @@
  */
 import { gsap } from 'gsap';
 import { state } from './state';
+import { start as narrationStart, stop as narrationStop } from './narration';
 import type { Branch } from '../data/script';
 import type { Hud } from '../components/Hud';
 import type { Stage } from '../three/stage';
@@ -73,6 +74,7 @@ export class SceneEngine {
     this.locked = true;
     try {
       // 이전 씬 정리
+      narrationStop(); // 낭독 정지(겹침·누수 0)
       if (this.current) {
         try {
           this.current.exit?.();
@@ -100,6 +102,7 @@ export class SceneEngine {
       this.currentCtx = ctx;
 
       await scene.enter(container, ctx);
+      narrationStart(scene.id); // 옵트인·en 한정 감정 낭독(조건 미충족 시 무음)
       // 새 씬으로 포커스 이동(스크롤 점프 없이) — 키보드 진행/스크린리더 안내
       try {
         container.focus({ preventScroll: true });
@@ -121,6 +124,7 @@ export class SceneEngine {
 
   /** 엔진 정지·정리 (리플레이 직전) */
   teardown(): void {
+    narrationStop();
     try {
       this.current?.exit?.();
     } catch {

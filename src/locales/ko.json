@@ -30,6 +30,8 @@
   "ui.btn.viewProposal": "제안서 보기 →",
   "ui.mute": "소리 끄기",
   "ui.unmute": "소리 켜기",
+  "ui.narrate.on": "낭독 켜기",
+  "ui.narrate.off": "낭독 끄기",
   "ui.skip": "건너뛰기 →",
   "ui.supplementNote": "본 자료는 1페이지 제안서의 보완 자료입니다.",
   "s0.kicker": "PRE-MORTEM · 인터랙티브",

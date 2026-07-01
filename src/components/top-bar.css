@@ -40,6 +40,12 @@
   color: var(--txt);
 }
 
+/* 낭독 토글 활성 상태 — 초록 강조 */
+.top-bar__narrate.is-active {
+  color: var(--green);
+  border-color: color-mix(in srgb, var(--green) 45%, var(--glass-border));
+}
+
 /* 소리 사용 가능 힌트 — 첫 진입 시 몇 회 펄스 */
 .top-bar__mute.is-hint {
   animation: mute-hint 1.5s var(--ease-io) 1.5s 3;

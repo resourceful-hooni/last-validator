@@ -9,6 +9,7 @@ import { initI18n, onLocaleChange, injectAlternateLinks } from './i18n';
 import { createTopBar, onMuteChange } from './components/TopBar';
 import { setMuted, audioState, activateAudio } from './engine/audio';
 import { setMute } from './components/TopBar';
+import { initNarration, setNarrationMuted, markStarted as narrationMarkStarted } from './engine/narration';
 import { createPreloader } from './components/Preloader';
 import { playCutscene, cutsceneUrl } from './components/CutsceneVideo';
 import { prefersReducedMotion } from './engine/motion';
@@ -30,11 +31,16 @@ async function boot(): Promise<void> {
   injectAlternateLinks();
 
   document.body.appendChild(createTopBar());
-  onMuteChange((m) => setMuted(m)); // 음소거 토글 → 오디오 마스터
+  initNarration();
+  onMuteChange((m) => {
+    setMuted(m); // 음소거 토글 → 오디오 마스터
+    setNarrationMuted(m); // + 낭독도 정지
+  });
 
   // 소리 기본 재생: 자동재생 정책상 첫 사용자 제스처에 오디오 컨텍스트 활성(어떤 터치/클릭/키든).
   const startAudioOnce = (): void => {
     activateAudio();
+    narrationMarkStarted(); // 첫 제스처 → 낭독 재생 허용
     window.removeEventListener('pointerdown', startAudioOnce);
     window.removeEventListener('keydown', startAudioOnce);
     window.removeEventListener('touchstart', startAudioOnce);

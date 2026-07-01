@@ -30,6 +30,8 @@
   "ui.btn.viewProposal": "查看提案 →",
   "ui.mute": "静音",
   "ui.unmute": "取消静音",
+  "ui.narrate.on": "开启朗读",
+  "ui.narrate.off": "关闭朗读",
   "ui.skip": "跳过 →",
   "ui.supplementNote": "本资料为一页提案的补充材料。",
   "s0.kicker": "PRE-MORTEM · 互动",

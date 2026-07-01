@@ -4,6 +4,8 @@ dist/
 trailer/out/
 trailer/.remotion/
 assets-src/fonts/
+.cache/
+scripts/*.wav
 *.local
 .DS_Store
 Thumbs.db

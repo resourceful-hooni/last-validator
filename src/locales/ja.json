@@ -30,6 +30,8 @@
   "ui.btn.viewProposal": "提案を見る →",
   "ui.mute": "ミュート",
   "ui.unmute": "ミュート解除",
+  "ui.narrate.on": "ナレーション オン",
+  "ui.narrate.off": "ナレーション オフ",
   "ui.skip": "スキップ →",
   "ui.supplementNote": "本資料は1ページ提案書の補足資料です。",
   "s0.kicker": "PRE-MORTEM · インタラクティブ",
