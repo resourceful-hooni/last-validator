@@ -17,7 +17,7 @@
 - 명도대비: 본문 텍스트 ≥ 4.5:1, 큰 텍스트 ≥ 3:1.
 
 ## 2. 타이포그래피
-- 폰트 스택: `'Pretendard','Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif`. (임베드 시 Pretendard OFL만, 라이선스 표기.)
+- 폰트 스택: `'Pretendard','Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif`. (셀프호스트 구현: Pretendard(ko·en)+Noto Sans SC/JP(zh·ja) **OFL 서브셋** 임베드 — `public/fonts/`, `scripts/subset-fonts.mjs`, CREDITS 표기. 스택 맨 앞 `… Subset`, 시스템 폴백 유지.)
 - 스케일(반응형 `clamp()`): 타이틀 `clamp(32px,9vw,46px)` / 씬 타이틀 `clamp(18px,5vw,22px)` / 본문 `clamp(14px,3.7vw,15.5px)` / 캡션·키커 10~11px.
 - 굵기: 본문 400, 강조 700, 타이틀 800~900. 자간: 타이틀 `-.01~-.02em`, 키커 `+.2em` 대문자.
 

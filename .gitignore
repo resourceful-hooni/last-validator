@@ -3,6 +3,7 @@ dist/
 .claude/settings.local.json
 trailer/out/
 trailer/.remotion/
+assets-src/fonts/
 *.local
 .DS_Store
 Thumbs.db

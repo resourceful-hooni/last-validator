@@ -57,24 +57,47 @@
   --dur-cinematic: 1s;
 
   /* ── 로케일 기본 폰트/줄높이 (ko 기준; html[lang]로 교체 · §9) ── */
-  --font-stack: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', system-ui, sans-serif;
+  --font-stack: 'Pretendard Subset', 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', system-ui, sans-serif;
   --lh-body: 1.6;
 }
 
-/* ── 로케일별 폰트 스택 + 줄높이 (I18N §4 / DESIGN_SYSTEM §9) ── */
+/* ── 셀프호스트 OFL 서브셋 폰트 (public/fonts · scripts/subset-fonts.mjs 생성 · Variable wght 100–900) ── */
+@font-face {
+  font-family: 'Pretendard Subset';
+  src: url('/fonts/pretendard-subset.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Noto Sans SC Subset';
+  src: url('/fonts/noto-sc-subset.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Noto Sans JP Subset';
+  src: url('/fonts/noto-jp-subset.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ── 로케일별 폰트 스택 + 줄높이 (I18N §4 / DESIGN_SYSTEM §9) — 서브셋을 맨 앞, 시스템 폴백 유지 ── */
 html[lang='ko'] {
-  --font-stack: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', system-ui, sans-serif;
+  --font-stack: 'Pretendard Subset', 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', system-ui, sans-serif;
   --lh-body: 1.6;
 }
 html[lang='en'] {
-  --font-stack: 'Inter', 'Helvetica Neue', Arial, system-ui, sans-serif;
+  --font-stack: 'Pretendard Subset', 'Inter', 'Helvetica Neue', Arial, system-ui, sans-serif;
   --lh-body: 1.5;
 }
 html[lang='zh'] {
-  --font-stack: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+  --font-stack: 'Noto Sans SC Subset', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
   --lh-body: 1.55;
 }
 html[lang='ja'] {
-  --font-stack: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', 'Meiryo', system-ui, sans-serif;
+  --font-stack: 'Noto Sans JP Subset', 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', 'Meiryo', system-ui, sans-serif;
   --lh-body: 1.6;
 }

@@ -11,11 +11,14 @@
     "typecheck": "tsc --noEmit",
     "check-locales": "node scripts/check-locales.mjs",
     "extract-locales": "node scripts/extract-locales.mjs",
-    "render-og": "node scripts/render-og.mjs"
+    "render-og": "node scripts/render-og.mjs",
+    "fonts:subset": "node scripts/subset-fonts.mjs"
   },
   "devDependencies": {
     "@types/three": "^0.171.0",
+    "fontkit": "^2.0.4",
     "sharp": "^0.35.2",
+    "subset-font": "^2.5.0",
     "typescript": "^5.7.2",
     "vite": "^6.0.5"
   },

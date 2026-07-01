@@ -9,17 +9,18 @@
 - `public/video/{intro,finale}.mp4`(가로 1920×1080) + `{intro,finale}-mobile.mp4`(세로 1080×1920) — **자작 Remotion 컴포지션**(`trailer/src/Intro.tsx`·`Finale.tsx`, 방향 반응형)을 렌더한 비인터랙티브 컷신. 외부 영상·음원 0(무음). 뷰포트에 따라 가로/세로 변형 서빙. 인트로/명제 finale에 임베드, reduced-motion·로드실패 시 라이브 폴백. 컷신은 항상 body 부착. (2036 전환 S8은 라이브 3D.)
 
 ## 폰트
-- 현재 빌드는 **시스템 폰트 스택**만 사용한다(임베드 없음). 따라서 별도 폰트 라이선스 의무 없음.
-  - ko: Pretendard*, Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR
-  - en: Inter*, Helvetica Neue, Arial
-  - zh: Noto Sans SC, PingFang SC, Microsoft YaHei
-  - ja: Noto Sans JP, Hiragino Sans, Yu Gothic, Meiryo
-  - (*Pretendard·Inter·Noto는 OFL. 추후 셀프호스트로 임베드할 경우 OFL 라이선스 파일을 `public/fonts/`에 동봉하고 여기에 명시한다.)
+- **셀프호스트 자작 서브셋(OFL 1.1)** — 실제 사용 글자만 서브셋해 `public/fonts/`에 동봉(원본 대비 초경량, 로케일별 1파일만 로드). 스택 맨 앞에 두고 시스템 폰트를 폴백으로 유지.
+  - **Pretendard** (ko·en) — `public/fonts/pretendard-subset.woff2` (Variable wght, ~104KB). OFL 1.1. 라이선스: `public/fonts/OFL-Pretendard.txt`. 출처: https://github.com/orioncactus/pretendard
+  - **Noto Sans SC** (zh) — `public/fonts/noto-sc-subset.woff2` (Variable wght, ~180KB). © Google, OFL 1.1. 라이선스: `public/fonts/OFL-Noto.txt`. 출처: https://github.com/notofonts/noto-cjk
+  - **Noto Sans JP** (ja) — `public/fonts/noto-jp-subset.woff2` (Variable wght, ~198KB). © Google, OFL 1.1. 라이선스: `public/fonts/OFL-Noto.txt`.
+  - 서브셋 생성: `node scripts/subset-fonts.mjs` (원본 TTF는 `assets-src/fonts/`, gitignore). 카피 수정 시 재실행.
+  - 폴백(임베드 안 함, 시스템): Apple SD Gothic Neo·Malgun Gothic·Inter·PingFang SC·Hiragino Sans·Yu Gothic·Meiryo·system-ui.
+  - 서브셋 미보유 글리프(한자주기 老·非, 일부 로케일의 ↺ 리플레이 화살표)는 시스템 폰트로 자연 폴백(누락·두부현상 없음).
 
 ## 사운드
 - 전부 **Web Audio API 실시간 합성**(`src/engine/audio.ts`) — 외부 오디오 파일 0, 저작권 안전.
   - 앰비언트 험(저주파 사인 합성), KPI '딩', 보존 '둔탁', S4 험 끊김, S8 모니터 비프+드론, 엔딩 저음 임팩트.
-  - 기본 음소거 + 우측 상단 토글, 사용자 제스처(시작 버튼) 이후에만 활성. 모든 연출에 시각 대체 존재.
+  - 기본 재생(첫 사용자 제스처에 오디오 컨텍스트 활성) + 우측 상단 음소거 토글. 모든 연출에 자막·시각 대체 존재.
 
 ## 3D (WebGL) · 시네마틱 렌더링
 - 모든 지오메트리·셰이더 **자작·절차적**: 배경 파티클, 반투명 메시 뇌, **레이마칭 볼류메트릭 CT 뇌(GLSL)**, 색보정 이펙트. 외부 3D 모델·텍스처·HDRI·LUT 파일 0.
@@ -33,4 +34,4 @@
 - Vite, TypeScript (MIT/오픈소스)
 
 ---
-_마지막 업데이트: Phase 0_
+_마지막 업데이트: 폰트 셀프호스트(OFL 서브셋) 임베드_
