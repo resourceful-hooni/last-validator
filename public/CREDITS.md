@@ -34,7 +34,7 @@
 - 품질 티어(고=볼류메트릭/저=경량) 자동 + FPS 자동 강등. reduced-motion·WebGL 미지원 시 2D 폴백.
 
 ## 라이브러리
-- GSAP (그린삭 표준 'No Charge' 라이선스, 무료 범위 사용) — https://gsap.com
+- GSAP (그린삭 표준 'No Charge' 라이선스, 무료 범위 사용) — https://gsap.com . 앱 애니메이션에 사용. (제안서 페이지 스크롤 리빌은 라이브러리 없이 CSS + IntersectionObserver 자작.)
 - Three.js (MIT) — WebGL 렌더링
 - Vite, TypeScript (MIT/오픈소스)
 
