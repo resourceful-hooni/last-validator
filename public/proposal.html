@@ -64,19 +64,45 @@
         background-image: repeating-linear-gradient(to bottom, rgba(255,255,255,.6) 0, rgba(255,255,255,.6) 1px, transparent 1px, transparent 3px);
       }
       .wrap { position: relative; z-index: 1; max-width: var(--maxw); margin: 0 auto; }
-      #progress { position: fixed; top: 0; left: 0; height: 3px; width: 100%; transform: scaleX(0); transform-origin: 0 50%; background: linear-gradient(90deg, var(--green), #7ee0ac); z-index: 50; will-change: transform; }
+      #progress { position: fixed; top: 0; left: 0; height: 3px; width: 100%; transform: scaleX(0); transform-origin: 0 50%; background-color: var(--green); transition: background-color 0.9s ease; z-index: 50; will-change: transform; }
+      body[data-mood='red'] #progress { background-color: var(--red); }
+      body[data-mood='amber'] #progress { background-color: var(--amber); }
+
+      /* ① 무드 그레이딩 레이어 — body[data-mood]가 크로스페이드(본편 setMood 미러 · 저알파·1.2s 저속, 광과민 안전) */
+      .mood { position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0; transition: opacity 1.2s ease; }
+      .m-cool { background: radial-gradient(900px 520px at 50% 12%, rgba(58, 96, 138, 0.16), transparent 70%); }
+      .m-green { background: radial-gradient(900px 520px at 50% 16%, rgba(52, 199, 123, 0.13), transparent 70%); }
+      .m-red { background: linear-gradient(rgba(0, 0, 0, 0.24), rgba(0, 0, 0, 0.24)), radial-gradient(900px 520px at 50% 20%, rgba(226, 74, 61, 0.15), transparent 70%); }
+      .m-amber { background: radial-gradient(900px 520px at 50% 16%, rgba(224, 162, 58, 0.12), transparent 70%); }
+      body[data-mood='cool'] .m-cool, body[data-mood='green'] .m-green, body[data-mood='red'] .m-red, body[data-mood='amber'] .m-amber { opacity: 1; }
+
+      /* ② 필름 프레이밍: 레터박스 오프닝(.js 전용, 1.6s 폴백에서 무조건 제거) + 정적 비네트 */
+      .lb { display: none; }
+      .js .lb { display: block; position: fixed; left: 0; right: 0; height: 9vh; background: #000; z-index: 60; pointer-events: none; transition: height 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) 0.3s; }
+      .lb-t { top: 0; }
+      .lb-b { bottom: 0; }
+      .js .lb.open { height: 0; }
+      body::after { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 2; box-shadow: inset 0 0 150px rgba(0, 0, 0, 0.5); }
 
       a { color: inherit; }
       a.src { color: var(--mut); text-decoration: none; border-bottom: 1px solid var(--line); transition: color .15s, border-color .15s; }
       a.src:hover, a.src:focus-visible { color: var(--green); border-color: var(--green); }
       :focus-visible { outline: 2px solid var(--green); outline-offset: 3px; border-radius: 4px; }
 
-      header { padding: clamp(56px, 12vh, 120px) 0 34px; text-align: center; }
+      header { position: relative; padding: clamp(56px, 12vh, 120px) 0 34px; text-align: center; will-change: transform; }
       .kicker { font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--mut2); }
       h1 { font-size: clamp(40px, 11vw, 74px); font-weight: 800; letter-spacing: -.03em; line-height: 1.02; margin: 16px 0 0; }
       .dots { display: flex; gap: 12px; justify-content: center; margin: 24px 0 4px; }
       .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--green); box-shadow: 0 0 16px var(--green); }
       .dot.r { background: var(--red); box-shadow: 0 0 16px var(--red); }
+      /* ② 레드 도트 저속 숨쉬기(2.8s ease, 스트로브 아님) */
+      @keyframes dot-breathe { 0%, 100% { opacity: 0.55; box-shadow: 0 0 10px var(--red); } 50% { opacity: 1; box-shadow: 0 0 22px var(--red); } }
+      .js .dot.r { animation: dot-breathe 2.8s ease-in-out infinite; }
+      /* ③ 스크롤 힌트(.js 전용, 스크롤 시 페이드아웃) */
+      .hint { display: none; }
+      .js .hint { display: block; position: absolute; left: 50%; bottom: -8px; transform: translateX(-50%); color: var(--mut2); font-size: 18px; animation: hint-float 2.6s ease-in-out infinite; transition: opacity 0.5s; }
+      .js .hint.gone { opacity: 0; }
+      @keyframes hint-float { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, 8px); } }
       .sub { color: var(--mut); font-size: clamp(15px, 4.2vw, 18px); margin-top: 14px; }
 
       .thesis { margin: 30px auto 0; max-width: 640px; }
@@ -132,7 +158,12 @@
         opacity: 0; transform: translateY(22px);
         transition: opacity .6s ease, transform .6s cubic-bezier(.2, .7, .2, 1);
       }
-      .js .in { opacity: 1 !important; transform: none !important; }
+      /* ② 랙포커스: 주요 타이틀은 블러→선명(본편 DoF 호응, 대상 한정=성능) */
+      .js h1, .js section > h2, .js .callout {
+        filter: blur(10px);
+        transition: opacity .6s ease, transform .6s cubic-bezier(.2, .7, .2, 1), filter .7s ease;
+      }
+      .js .in { opacity: 1 !important; transform: none !important; filter: none !important; }
       .js .kicker { transition-delay: .04s; } .js h1 { transition-delay: .12s; }
       .js .dots { transition-delay: .22s; } .js .sub { transition-delay: .3s; }
       .js .thesis .line:nth-child(1) { transition-delay: .4s; } .js .thesis .line:nth-child(2) { transition-delay: .48s; }
@@ -145,16 +176,25 @@
         .btn { transition: none; }
         .js .kicker, .js h1, .js .dots, .js .sub, .js .thesis .line,
         .js .sec-no, .js section > h2, .js section > p, .js .callout, .js .card, .js .sig {
-          opacity: 1 !important; transform: none !important; transition: none !important;
+          opacity: 1 !important; transform: none !important; transition: none !important; filter: none !important;
         }
+        .js .lb { display: none; }
+        .js .dot.r, .js .hint { animation: none; }
+        .mood, #progress { transition: none; }
       }
       @media (pointer: coarse) { .glass { backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); } }
     </style>
   </head>
-  <body>
+  <body data-mood="cool">
     <div id="progress" aria-hidden="true"></div>
+    <div class="lb lb-t" aria-hidden="true"></div>
+    <div class="lb lb-b" aria-hidden="true"></div>
+    <div class="mood m-cool" aria-hidden="true"></div>
+    <div class="mood m-green" aria-hidden="true"></div>
+    <div class="mood m-red" aria-hidden="true"></div>
+    <div class="mood m-amber" aria-hidden="true"></div>
     <div class="wrap">
-      <header>
+      <header data-m="cool">
         <p class="kicker">2026 KAIST AI × 실패 아이디어 공모전 · 1페이지 제안서</p>
         <h1>마지막 검증자</h1>
         <div class="dots" aria-hidden="true"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot r"></span></div>
@@ -166,16 +206,17 @@
           <p class="line tl zh" lang="zh"><span class="lang" style="font-family:var(--font)">ZH</span>AI 没有夺走我们的工作。它掏空了核验工作的能力。</p>
           <p class="line tl ja" lang="ja"><span class="lang" style="font-family:var(--font)">JA</span>AIは仕事を奪わなかった。それを検証する能力を、空にした。</p>
         </div>
+        <div class="hint" aria-hidden="true">↓</div>
       </header>
 
       <main>
-        <section>
+        <section data-m="green">
           <p class="sec-no">01 · 실패 아이디어</p>
           <h2>AI가 판단을 대신하는 사이,<br />인간은 <span class="rd">‘스스로 검증할 능력’</span>을 잃는다.</h2>
           <p>「마지막 검증자」가 다루는 실패는 <em>독립 검증 역량(Independent Verification Capacity)</em>의 조용한 공동화다. AI를 1차 판단자로 두고 인간을 ‘확인자’로 밀어내면, 사람은 <em>AI 없이 스스로 판독·검증하는 능력</em>을 점점 잃는다. 문제는 이 상실이 <span class="rd">서서히, 지표에 잡히지 않게</span> 일어난다는 것이다. 처리량·비용·일치율 대시보드는 계속 <span class="gn">초록색</span>이다.</p>
         </section>
 
-        <section>
+        <section data-m="red">
           <p class="sec-no">02 · 왜 실패인가 — 합리성의 함정</p>
           <h2>각 결정은 옳아 보인다.<br />그 합이 10년 뒤 재앙이 된다.</h2>
           <p class="mut">한 병원 시스템의 결정권자가 되어 다섯 번의 <em>합리적</em> 선택을 한다 — AI를 1차 판독자로, 신입은 최소로, ‘AI와 함께’를 유능함의 기준으로, 보조 지표만 측정, 규제는 자율로. 비용은 줄고 속도는 빨라진다. 모두 개별적으로는 합리적이다.</p>
@@ -185,17 +226,17 @@
           <p class="mut" style="margin-top:16px">살릴 수 있는 뇌경색이 응급실에 실려 온다. AI는 비전형적 경색을 ‘응급도 낮음’으로 분류한다. 당직의는 AI 없이 CT를 혼자 읽어본 적이 없다. 화면은 정상처럼 보이고 — 황금 시간이 닫힌다. <span class="rd">그리고 그달의 품질 지표는 전부 초록색이었다.</span></p>
         </section>
 
-        <section>
+        <section data-m="amber">
           <p class="sec-no">03 · 이건 허구가 아니다 — 2026년의 실제 신호</p>
           <h2>탈숙련은 이미 <span class="gn">측정된 현실</span>이다.</h2>
           <div style="margin-top:16px">
-            <div class="sig glass"><span class="yr">2024 한국</span><span class="tx">전공의 <em>56.5%(7,648명)</em> 이탈 — 수련 사다리가 실제로 끊겼다. <a class="src" href="https://en.wikipedia.org/wiki/2024_South_Korean_medical_crisis" target="_blank" rel="noopener noreferrer">출처 ↗</a></span></div>
-            <div class="sig glass"><span class="yr">2025 Lancet</span><span class="tx">AI 노출 뒤 숙련의의 비(非)AI 병변 발견율 <em>−20%</em> — 탈숙련의 정량 근거. <a class="src" href="https://doi.org/10.1016/S2468-1253(25)00133-5" target="_blank" rel="noopener noreferrer">출처 ↗</a></span></div>
-            <div class="sig glass"><span class="yr">2009 AF447</span><span class="tx">자동조종이 풀린 순간 조종사들이 수동 회복에 실패, <em>228명 사망</em> — 자동화의 역설. <a class="src" href="https://en.wikipedia.org/wiki/Air_France_Flight_447" target="_blank" rel="noopener noreferrer">출처 ↗</a></span></div>
+            <div class="sig glass"><span class="yr">2024 한국</span><span class="tx">전공의 <em><span class="num" data-t="56.5" data-d="1">56.5</span>%(<span class="num" data-t="7648" data-c="1">7,648</span>명)</em> 이탈 — 수련 사다리가 실제로 끊겼다. <a class="src" href="https://en.wikipedia.org/wiki/2024_South_Korean_medical_crisis" target="_blank" rel="noopener noreferrer">출처 ↗</a></span></div>
+            <div class="sig glass"><span class="yr">2025 Lancet</span><span class="tx">AI 노출 뒤 숙련의의 비(非)AI 병변 발견율 <em>−<span class="num" data-t="20">20</span>%</em> — 탈숙련의 정량 근거. <a class="src" href="https://doi.org/10.1016/S2468-1253(25)00133-5" target="_blank" rel="noopener noreferrer">출처 ↗</a></span></div>
+            <div class="sig glass"><span class="yr">2009 AF447</span><span class="tx">자동조종이 풀린 순간 조종사들이 수동 회복에 실패, <em><span class="num" data-t="228">228</span>명 사망</em> — 자동화의 역설. <a class="src" href="https://en.wikipedia.org/wiki/Air_France_Flight_447" target="_blank" rel="noopener noreferrer">출처 ↗</a></span></div>
           </div>
         </section>
 
-        <section>
+        <section data-m="green">
           <p class="sec-no">04 · 제안 — 막는 법</p>
           <h2><span class="gn">‘AI 없이도 읽을 수 있는 사람’</span>을<br />제도로 지킨다.</h2>
           <p class="mut">개인의 의지가 아니라 <em>제도</em>의 문제다. 검증 역량은 시장의 ‘싼 길’ 중력에 그냥 맡기면 반드시 공동화된다. 네 개의 레버로 최저선을 지킨다.</p>
@@ -207,7 +248,7 @@
           </div>
         </section>
 
-        <section>
+        <section data-m="green">
           <p class="sec-no">05 · 왜 지금인가</p>
           <h2>아직 <span class="gn">마지막 세대</span>가 남아 있을 때.</h2>
           <p>AI 없이 배운 세대는 은퇴를 앞두고 있다. 그들이 사라지면, ‘AI가 틀렸다’고 말할 수 있는 사람도 함께 사라진다. <em>막을 수 있다 — 오늘.</em> ‘AI 없이도 읽을 수 있는 사람’을 제도로 지키는 것에서 시작한다.</p>
@@ -225,15 +266,28 @@
       </footer>
     </div>
 
-    <!-- 스크롤 애니메이션(자작 · CSS + IntersectionObserver, AOS식). reduced-motion·JS없음 시 전부 정적. -->
+    <!-- 스크롤 연출(자작 · CSS + IntersectionObserver). reduced-motion·JS없음·프리즈 환경 모두 '정적 정답'으로 수렴. -->
     <script>
       (function () {
-        // 상단 스크롤 진행 바(스크롤 이벤트 기반)
+        var RM = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        var hasIO = 'IntersectionObserver' in window;
+
+        // ② 레터박스 오프닝(영화 시작) — 잠시 후 open, 1.6s 폴백에서 무조건 제거
+        var lbs = document.querySelectorAll('.lb');
+        setTimeout(function () {
+          lbs.forEach(function (b) { b.classList.add('open'); });
+        }, 60);
+
+        // 진행 바 + ③ 히어로 미세 패럴랙스 + 스크롤 힌트 페이드
         var prog = document.getElementById('progress');
+        var header = document.querySelector('header');
+        var hint = document.querySelector('.hint');
         function up() {
           var h = document.documentElement;
-          var m = (h.scrollHeight - h.clientHeight) || 1;
-          prog.style.transform = 'scaleX(' + Math.min(1, (window.scrollY || h.scrollTop) / m) + ')';
+          var sy = window.scrollY || h.scrollTop || 0;
+          prog.style.transform = 'scaleX(' + Math.min(1, sy / ((h.scrollHeight - h.clientHeight) || 1)) + ')';
+          if (!RM && header) header.style.transform = 'translateY(' + Math.min(sy, h.clientHeight) * 0.12 + 'px)';
+          if (hint) hint.classList.toggle('gone', sy > 40);
         }
         window.addEventListener('scroll', up, { passive: true });
         window.addEventListener('resize', up);
@@ -242,27 +296,76 @@
         // 뷰포트 진입 시 .in → CSS 트랜지션 리빌(히어로는 초기 뷰포트라 로드 시 순차 노출)
         var sel = '.kicker, h1, .dots, .sub, .thesis .line, .sec-no, section > h2, section > p, .callout, .card, .sig';
         var els = document.querySelectorAll(sel);
-        if (!('IntersectionObserver' in window)) {
+        if (hasIO) {
+          var io = new IntersectionObserver(
+            function (entries) {
+              entries.forEach(function (e) {
+                if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+              });
+            },
+            { threshold: 0.12, rootMargin: '0px 0px -6% 0px' }
+          );
+          els.forEach(function (el) { io.observe(el); });
+        } else {
           els.forEach(function (el) { el.classList.add('in'); });
-          return;
         }
-        var io = new IntersectionObserver(
-          function (entries) {
-            entries.forEach(function (e) {
-              if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
-            });
-          },
-          { threshold: 0.12, rootMargin: '0px 0px -6% 0px' }
-        );
-        els.forEach(function (el) { io.observe(el); });
 
-        // 폴백: IO가 초기 뷰포트 요소조차 리빌 못하면(환경 이슈·트랜지션 프리즈) 즉시(트랜지션 없이) 전부 노출 → 영구 숨김 방지
+        // ① 무드 그레이딩: 뷰포트 중앙을 지나는 구획(data-m)이 body[data-mood]를 정함(본편 setMood 미러). RM은 cool 고정.
+        if (!RM && hasIO) {
+          var mio = new IntersectionObserver(
+            function (entries) {
+              entries.forEach(function (e) {
+                if (e.isIntersecting) document.body.dataset.mood = e.target.dataset.m;
+              });
+            },
+            { rootMargin: '-45% 0px -45% 0px', threshold: 0 }
+          );
+          document.querySelectorAll('[data-m]').forEach(function (el) { mio.observe(el); });
+        }
+
+        // ③ 카운트업(본편 countTo 호응): 초기 HTML=최종값(no-JS/프리즈 정답) → 진입 시 0부터 easeOut. rAF 프리즈 대비 1.2s 가드.
+        function fmt(v, n) {
+          var s = n.dataset.d ? v.toFixed(+n.dataset.d) : String(Math.round(v));
+          return n.dataset.c ? s.replace(/\B(?=(\d{3})+(?!\d))/g, ',') : s;
+        }
+        function setFinal(n) { n.textContent = fmt(parseFloat(n.dataset.t), n); }
+        function count(n) {
+          if (n._done) return;
+          n._done = true;
+          var t = parseFloat(n.dataset.t);
+          var t0 = performance.now();
+          var guard = setTimeout(function () { setFinal(n); }, 1200);
+          (function tick(now) {
+            var p = Math.min(1, (now - t0) / 900);
+            p = 1 - Math.pow(1 - p, 3);
+            n.textContent = fmt(t * p, n);
+            if (p < 1) requestAnimationFrame(tick);
+            else { clearTimeout(guard); setFinal(n); }
+          })(t0);
+        }
+        if (!RM && hasIO) {
+          var nio = new IntersectionObserver(
+            function (entries) {
+              entries.forEach(function (e) {
+                if (!e.isIntersecting) return;
+                e.target.querySelectorAll('.num').forEach(count);
+                nio.unobserve(e.target);
+              });
+            },
+            { threshold: 0.4 }
+          );
+          document.querySelectorAll('.sig').forEach(function (el) { nio.observe(el); });
+        }
+
+        // 폴백: 리빌이 전혀 안 됐으면(환경 이슈·트랜지션 프리즈) 즉시 전부 노출 + 레터박스 무조건 제거 → 콘텐츠 가림 0
         setTimeout(function () {
+          lbs.forEach(function (b) { b.style.display = 'none'; });
           if (!document.querySelector('.in')) {
             els.forEach(function (el) {
               el.style.transition = 'none';
               el.style.opacity = '1';
               el.style.transform = 'none';
+              el.style.filter = 'none';
             });
           }
         }, 1600);
